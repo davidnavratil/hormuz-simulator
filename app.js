@@ -180,16 +180,46 @@ function computeSimulation(params) {
     ? Math.abs(supplyShock * REFERENCE_DATA.globalConsumption * effectiveEpsilonD / denom)
     : 0;
 
-  const gasolineCZK = brentWithPanic * 0.42 + 12;
+  // Peak values (short-term elasticities, no timeMultiplier adjustment)
+  const denomPeak = Math.abs(epsilonD) + epsilonS;
+  const pctPeakFund = denomPeak > 0 ? supplyShock / denomPeak : 0;
+  const pctPeakPanic = pctPeakFund * activePanicMultiplier;
+  const brentPeakFund = preCrisisBrent * (1 + pctPeakFund);
+  const brentPeakPanic = preCrisisBrent * (1 + pctPeakPanic);
+  const ttfPeakPanic = preCrisisTTF * (1 + pctPeakPanic * ttfMult);
+
+  // 12-month average from trajectory
+  const fundTraj = generateTrajectory(preCrisisBrent, brentPeakFund, duration, pctPeakFund);
+  const panicTraj = generateTrajectory(preCrisisBrent, brentPeakPanic, duration, pctPeakFund);
+  const avgBrentFund = fundTraj.reduce((s, p) => s + p.price, 0) / fundTraj.length;
+  const avgBrentPanic = panicTraj.reduce((s, p) => s + p.price, 0) / panicTraj.length;
+  const avgTtfPanic = preCrisisTTF * (1 + ((avgBrentPanic / preCrisisBrent - 1)) * ttfMult);
+
+  const gasolineCZKPeak = brentPeakPanic * 0.42 + 12;
+  const gasolineCZKAvg = avgBrentPanic * 0.42 + 12;
+
+  // CPI/GDP based on 12M average (more realistic for macro impacts)
+  const energyPriceIncreaseAvg = ((avgBrentPanic / preCrisisBrent) - 1) * 100;
+  const cpiImpactCZAvg = energyPriceIncreaseAvg * 0.04 * REFERENCE_DATA.czech.cpiAmplification;
+  const gdpImpactCZAvg = -(energyPriceIncreaseAvg / 10) * 1.4 * 1.5;
+
+  // CPI/GDP based on peak
+  const energyPriceIncreasePeak = pctPeakPanic * 100;
+  const cpiImpactCZPeak = energyPriceIncreasePeak * 0.04 * REFERENCE_DATA.czech.cpiAmplification;
+  const gdpImpactCZPeak = -(energyPriceIncreasePeak / 10) * 1.4 * 1.5;
 
   return {
-    brentFundamental, brentWithPanic,
-    ttfFundamental, ttfWithPanic,
-    pctChangeFundamental, pctChangeWithPanic,
+    brentFundamental: avgBrentFund, brentWithPanic: avgBrentPanic,
+    brentPeakFund, brentPeakPanic,
+    ttfFundamental: preCrisisTTF * (1 + ((avgBrentFund / preCrisisBrent - 1)) * ttfMult),
+    ttfWithPanic: avgTtfPanic, ttfPeakPanic,
+    pctChangeFundamental: pctPeakFund, pctChangeWithPanic: pctPeakPanic,
     totalStockpileNeed, stockpileSufficiency,
-    cpiImpactCZ, gdpImpactCZ,
+    cpiImpactCZ: cpiImpactCZAvg, cpiImpactCZPeak,
+    gdpImpactCZ: gdpImpactCZAvg, gdpImpactCZPeak,
     demandDestruction,
-    gasolineCZK, dailyDeficit,
+    gasolineCZK: gasolineCZKAvg, gasolineCZKPeak,
+    dailyDeficit,
   };
 }
 
@@ -548,12 +578,12 @@ function ToggleWithSlider({ label, helper, enabled, onToggle, value, onValueChan
 
 function TrajectoryChart({ results, params }) {
   const fundTraj = useMemo(() =>
-    generateTrajectory(params.preCrisisBrent, results.brentFundamental, params.duration, results.pctChangeFundamental),
-    [params.preCrisisBrent, results.brentFundamental, params.duration, results.pctChangeFundamental]
+    generateTrajectory(params.preCrisisBrent, results.brentPeakFund, params.duration, results.pctChangeFundamental),
+    [params.preCrisisBrent, results.brentPeakFund, params.duration, results.pctChangeFundamental]
   );
   const panicTraj = useMemo(() =>
-    generateTrajectory(params.preCrisisBrent, results.brentWithPanic, params.duration, results.pctChangeFundamental),
-    [params.preCrisisBrent, results.brentWithPanic, params.duration, results.pctChangeFundamental]
+    generateTrajectory(params.preCrisisBrent, results.brentPeakPanic, params.duration, results.pctChangeFundamental),
+    [params.preCrisisBrent, results.brentPeakPanic, params.duration, results.pctChangeFundamental]
   );
   const data = useMemo(() =>
     fundTraj.map((p, i) => ({
@@ -564,7 +594,7 @@ function TrajectoryChart({ results, params }) {
     })),
     [fundTraj, panicTraj, params.preCrisisBrent]
   );
-  const maxP = Math.max(results.brentWithPanic, results.brentFundamental, 150);
+  const maxP = Math.max(results.brentPeakPanic, results.brentPeakFund, 150);
 
   return html`
     <div class="mt-6">
@@ -681,11 +711,11 @@ function Simulator() {
     });
   }, [params]);
 
-  const sev = results.brentWithPanic > 200 || results.gdpImpactCZ < -5
+  const sev = results.brentPeakPanic > 200 || results.gdpImpactCZPeak < -5
     ? { label: 'Kritický', color: '#DC2626', bg: 'bg-red-50' }
-    : results.brentWithPanic > 150 || results.gdpImpactCZ < -3
+    : results.brentPeakPanic > 150 || results.gdpImpactCZPeak < -3
     ? { label: 'Závažný', color: '#F97316', bg: 'bg-orange-50' }
-    : results.brentWithPanic > 110
+    : results.brentPeakPanic > 110
     ? { label: 'Mírný', color: '#EAB308', bg: 'bg-yellow-50' }
     : { label: 'Minimální', color: '#22C55E', bg: 'bg-green-50' };
 
@@ -742,15 +772,18 @@ function Simulator() {
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
             <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
               <p class="text-xs text-brand-gray">Brent — fundamentální</p>
-              <p class="text-xl font-bold font-mono text-brand-dark stat-value">${fmtNum(results.brentFundamental, 0)} $</p>
+              <p class="text-lg font-bold font-mono text-brand-dark stat-value">Peak ${fmtNum(results.brentPeakFund, 0)} $</p>
+              <p class="text-sm font-mono text-brand-gray">12M ∅ ${fmtNum(results.brentFundamental, 0)} $</p>
             </div>
             <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
               <p class="text-xs text-brand-gray">Brent — s panikou</p>
-              <p class="text-xl font-bold font-mono stat-value" style=${{ color: valColor(results.brentWithPanic, 150, 200) }}>${fmtNum(results.brentWithPanic, 0)} $</p>
+              <p class="text-lg font-bold font-mono stat-value" style=${{ color: valColor(results.brentPeakPanic, 150, 200) }}>Peak ${fmtNum(results.brentPeakPanic, 0)} $</p>
+              <p class="text-sm font-mono text-brand-gray">12M ∅ ${fmtNum(results.brentWithPanic, 0)} $</p>
             </div>
             <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
               <p class="text-xs text-brand-gray">TTF — s panikou</p>
-              <p class="text-xl font-bold font-mono stat-value" style=${{ color: valColor(results.ttfWithPanic, 100, 150) }}>${fmtNum(results.ttfWithPanic, 0)} €</p>
+              <p class="text-lg font-bold font-mono stat-value" style=${{ color: valColor(results.ttfPeakPanic, 100, 150) }}>Peak ${fmtNum(results.ttfPeakPanic, 0)} €</p>
+              <p class="text-sm font-mono text-brand-gray">12M ∅ ${fmtNum(results.ttfWithPanic, 0)} €</p>
             </div>
             <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
               <p class="text-xs text-brand-gray">Zásobová potřeba</p>
@@ -759,19 +792,21 @@ function Simulator() {
             </div>
             <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
               <p class="text-xs text-brand-gray">CPI dopad ČR</p>
-              <p class="text-xl font-bold font-mono stat-value" style=${{ color: valColor(results.cpiImpactCZ, 5, 10) }}>+${fmtNum(results.cpiImpactCZ, 1)} p.b.</p>
+              <p class="text-lg font-bold font-mono stat-value" style=${{ color: valColor(results.cpiImpactCZPeak, 5, 10) }}>Peak +${fmtNum(results.cpiImpactCZPeak, 1)} p.b.</p>
+              <p class="text-sm font-mono text-brand-gray">12M ∅ +${fmtNum(results.cpiImpactCZ, 1)} p.b.</p>
             </div>
             <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
               <p class="text-xs text-brand-gray">HDP dopad ČR</p>
-              <p class="text-xl font-bold font-mono stat-value" style=${{ color: valColor(results.gdpImpactCZ, -1.5, -3) }}>${fmtNum(results.gdpImpactCZ, 1)} p.b.</p>
+              <p class="text-lg font-bold font-mono stat-value" style=${{ color: valColor(results.gdpImpactCZPeak, -1.5, -3) }}>Peak ${fmtNum(results.gdpImpactCZPeak, 1)} p.b.</p>
+              <p class="text-sm font-mono text-brand-gray">12M ∅ ${fmtNum(results.gdpImpactCZ, 1)} p.b.</p>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3 mb-2">
             <div class="bg-brand-card rounded-lg p-3 border border-brand-line">
               <p class="text-xs text-brand-gray">Odhad ceny benzínu ČR</p>
-              <p class="text-lg font-bold font-mono text-brand-dark">${fmtNum(results.gasolineCZK, 0)} Kč/l</p>
-              <p class="text-xs text-brand-gray">Aktuálně ~37 Kč/l</p>
+              <p class="text-lg font-bold font-mono text-brand-dark">Peak ${fmtNum(results.gasolineCZKPeak, 0)} Kč/l</p>
+              <p class="text-sm font-mono text-brand-gray">12M ∅ ${fmtNum(results.gasolineCZK, 0)} Kč/l</p>
             </div>
             <div class="bg-brand-card rounded-lg p-3 border border-brand-line">
               <p class="text-xs text-brand-gray">Destrukce poptávky</p>
