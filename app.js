@@ -54,7 +54,7 @@ const REFERENCE_DATA = {
 
 const SENSITIVITY_DATA = [
   { label: 'Krizový režim', subtitle: 'εd=−0,07 εs=0,03', shock10: 136, shock20: 204, desc: 'Poptávka zcela nepružná, nabídka nereaguje. Lidé nemohou přestat jezdit, továrny nemohou změnit palivo, OPEC spare capacity je za Hormuzem.', isBaseline: false },
-  { label: 'Centrální odhad ★', subtitle: 'εd=−0,10 εs=0,05', shock10: 113, shock20: 158, desc: 'Mírná reakce poptávky (drobné omezování spotřeby), částečná nabídková odpověď přes OPEC spare capacity mimo Zálivu.', isBaseline: true },
+  { label: 'Centrální odhad', subtitle: 'εd=−0,10 εs=0,05', shock10: 113, shock20: 158, desc: 'Mírná reakce poptávky (drobné omezování spotřeby), částečná nabídková odpověď přes OPEC spare capacity mimo Zálivu.', isBaseline: true },
   { label: 'Optimistický', subtitle: 'εd=−0,10 εs=0,10', shock10: 102, shock20: 136, desc: 'Vyšší nabídková reakce — rychlejší nárůst břidlice, aktivace marginálních producentů (Brazílie, Guyana). Realistické po 2–3 měsících.', isBaseline: false },
   { label: 'Střednědobý', subtitle: 'εd=−0,14 εs=0,15', shock10: 91,  shock20: 115, desc: 'Ekonomika se přizpůsobila — fuel switching, úspory, nová produkce online. Odpovídá situaci po 4–6 měsících krize.', isBaseline: false },
 ];
