@@ -1,0 +1,231 @@
+/* ===== Base ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ===== Slider Styling ===== */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #B45309;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #B45309;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+/* ===== Toggle Switch ===== */
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: #CBD5E1;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.toggle-switch.active {
+  background: #B45309;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.toggle-switch.active::after {
+  transform: translateX(20px);
+}
+
+/* ===== Demand Destruction Zones ===== */
+.destruction-zone {
+  position: relative;
+  border-left: 3px solid transparent;
+  padding: 8px 12px;
+  transition: background 0.2s ease;
+}
+
+.destruction-zone.minimal { border-left-color: #22C55E; background: rgba(34, 197, 94, 0.05); }
+.destruction-zone.moderate { border-left-color: #EAB308; background: rgba(234, 179, 8, 0.05); }
+.destruction-zone.significant { border-left-color: #F97316; background: rgba(249, 115, 22, 0.05); }
+.destruction-zone.severe { border-left-color: #DC2626; background: rgba(220, 38, 38, 0.05); }
+
+/* ===== Current Price Marker ===== */
+.price-marker {
+  position: absolute;
+  right: -8px;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 8px solid #1A1D23;
+}
+
+/* ===== Stat Card Transitions ===== */
+.stat-value {
+  transition: color 0.3s ease;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Scenario Table ===== */
+.scenario-table th {
+  font-family: Georgia, Cambria, serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94A3B8;
+  padding: 8px 12px;
+  border-bottom: 2px solid #E2E8F0;
+  text-align: left;
+}
+
+.scenario-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #F1F5F9;
+  font-variant-numeric: tabular-nums;
+}
+
+.scenario-table tr:last-child td {
+  border-bottom: none;
+}
+
+.scenario-table tr.highlight td {
+  background: #FFFBEB;
+  font-weight: 600;
+}
+
+/* ===== Preset Buttons ===== */
+.preset-btn {
+  padding: 6px 14px;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #64748B;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.preset-btn:hover {
+  border-color: #B45309;
+  color: #B45309;
+}
+
+.preset-btn.active {
+  border-color: #B45309;
+  background: #FFFBEB;
+  color: #B45309;
+  font-weight: 500;
+}
+
+/* ===== Warning Box ===== */
+.warning-box {
+  border-left: 3px solid;
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.warning-box.danger { border-left-color: #DC2626; background: #FEF2F2; color: #991B1B; }
+.warning-box.caution { border-left-color: #EAB308; background: #FEFCE8; color: #854D0E; }
+.warning-box.info { border-left-color: #94A3B8; background: #F8FAFC; color: #475569; }
+
+/* ===== Section Divider ===== */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #E2E8F0, transparent);
+}
+
+/* ===== Recharts Overrides ===== */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: #F1F5F9;
+}
+
+.recharts-text {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  fill: #64748B;
+}
+
+.recharts-tooltip-wrapper {
+  outline: none;
+}
+
+/* ===== Copy Button ===== */
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #64748B;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.copy-btn:hover {
+  border-color: #B45309;
+  color: #B45309;
+}
+
+.copy-btn.copied {
+  border-color: #22C55E;
+  color: #22C55E;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  input[type="range"]::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+}
