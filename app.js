@@ -68,7 +68,7 @@ const STOCKPILE_DATA = [
 ];
 
 const DESTRUCTION_OIL = [
-  { range: '90–110',  label: 'Minimální dopad',   color: '#22C55E', desc: 'Omezení neesenciálních jízd' },
+  { range: '90–110',  label: 'Minimální dopad',   color: '#22C55E', desc: 'Drobné omezování spotřeby, méně jízd autem' },
   { range: '110–130', label: 'Počáteční destrukce', color: '#EAB308', desc: 'Chemie, cement, keramika zpomalují' },
   { range: '130–155', label: 'Výrazná destrukce',  color: '#F97316', desc: 'Petrochemie, automobilky omezují výrobu' },
   { range: '155+',    label: 'Plošná destrukce',   color: '#DC2626', desc: 'Ropa > 5,2 % HDP → historický práh recese' },
@@ -82,9 +82,10 @@ const DESTRUCTION_GAS = [
 ];
 
 const CZECH_SCENARIOS = [
-  { name: '10 % globální', brent: '91–136', ttf: '50–75', cpi: '+2 až +6', gdp: '−1,0 až −2,5', severity: 'moderate' },
+  { name: '10 % (3 měs.)', brent: '91–136', ttf: '50–75', cpi: '+2 až +6', gdp: '−1,0 až −2,5', severity: 'moderate' },
   { name: '20 % (3 měs.)', brent: '115–204', ttf: '65–140', cpi: '+5 až +12', gdp: '−2,0 až −4,5', severity: 'significant' },
-  { name: '20 % + panika', brent: '205–285', ttf: '100–200+', cpi: '+10 až +18', gdp: '−3,5 až −7,0', severity: 'severe' },
+  { name: '20 % (6 měs.)', brent: '105–170', ttf: '60–120', cpi: '+4 až +10', gdp: '−2,5 až −5,5', severity: 'significant' },
+  { name: '20 % + panika (3 měs.)', brent: '205–285', ttf: '100–200+', cpi: '+10 až +18', gdp: '−3,5 až −7,0', severity: 'severe' },
   { name: 'Katar izolovaně', brent: '~75–80', ttf: '85–140', cpi: '+3 až +7', gdp: '−1,0 až −2,0', severity: 'moderate' },
 ];
 
@@ -115,8 +116,8 @@ const KEY_FINDINGS = [
   },
   {
     num: 4,
-    title: 'SPR pokryjí krátký šok, ne prolongovaný',
-    text: 'IEA uvolnila rekordních 400 mil. bbl. Stačí na 10 % × 1–2 měsíce. Scénář 20 % × 6 měsíců vyžaduje 2,23 mld. bbl — zásobově nepřeklenutelné.',
+    title: 'Strategické rezervy pokryjí krátký šok, ne dlouhodobý',
+    text: 'IEA v březnu 2026 schválila uvolnění rekordních 400 mil. bbl strategických rezerv (rozloženo na 6 měsíců). Stačí na 10 % × 1–2 měsíce. Scénář 20 % × 6 měsíců vyžaduje 2,23 mld. bbl — zásobově nepřeklenutelné.',
   },
   {
     num: 5,
@@ -352,8 +353,12 @@ function BrentSensitivityChart() {
           <${Legend} wrapperStyle=${{ fontSize: 13 }} />
           <${ReferenceLine} y=${112} stroke="#1A1D23" strokeDasharray="6 3" label=${{ value: 'Aktuální Brent 112', position: 'right', style: { fontSize: 11, fill: '#1A1D23' } }} />
           <${ReferenceLine} y=${68} stroke="#94A3B8" strokeDasharray="3 3" label=${{ value: 'Předkrizový 68', position: 'right', style: { fontSize: 11, fill: '#94A3B8' } }} />
-          <${Bar} dataKey="shock10" name="Šok 10 %" fill="#B45309" radius=${[3, 3, 0, 0]} />
-          <${Bar} dataKey="shock20" name="Šok 20 %" fill="#DC2626" radius=${[3, 3, 0, 0]} />
+          <${Bar} dataKey="shock10" name="Šok 10 %" fill="#B45309" radius=${[3, 3, 0, 0]}>
+            <${LabelList} dataKey="shock10" position="top" style=${{ fontSize: 11, fill: '#B45309', fontWeight: 600 }} />
+          <//>
+          <${Bar} dataKey="shock20" name="Šok 20 %" fill="#DC2626" radius=${[3, 3, 0, 0]}>
+            <${LabelList} dataKey="shock20" position="top" style=${{ fontSize: 11, fill: '#DC2626', fontWeight: 600 }} />
+          <//>
         <//>
       <//>
     </div>
@@ -369,7 +374,7 @@ function StockpileTooltip({ active, payload }) {
       <p class="font-semibold text-brand-dark">${d.label}</p>
       <p class="font-mono">${fmtNum(d.need)} mil. bbl</p>
       <p class="text-xs mt-1 ${ok ? 'text-green-600' : 'text-red-600'}">
-        ${ok ? 'IEA release (400 mil.) stačí' : `IEA release pokrývá ${fmtNum(400/d.need*100, 0)} %`}
+        ${ok ? 'Uvolněné rezervy IEA (400 mil.) stačí' : `Rezervy IEA pokrývají ${fmtNum(400/d.need*100, 0)} %`}
       </p>
     </div>
   `;
@@ -379,14 +384,14 @@ function StockpileBreakevenChart() {
   return html`
     <div class="mb-12">
       <h3 class="font-serif text-lg font-bold text-brand-dark mb-1">Zásobový break-even</h3>
-      <p class="text-sm text-brand-gray mb-4">Kolik milionů barelů je potřeba k překlenutí krize vs. IEA release (400 mil. bbl).</p>
+      <p class="text-sm text-brand-gray mb-4">Kolik milionů barelů je potřeba k překlenutí krize vs. uvolnění strategických rezerv IEA (400 mil. bbl, schváleno v březnu 2026 — rozloženo na 6 měsíců čerpání).</p>
       <${ResponsiveContainer} width="100%" height=${280}>
         <${BarChart} data=${STOCKPILE_DATA} layout="vertical" barSize=${28}>
           <${CartesianGrid} strokeDasharray="3 3" horizontal=${false} />
           <${XAxis} type="number" domain=${[0, 2400]} tick=${{ fontSize: 12 }} tickFormatter=${v => fmtNum(v)} />
           <${YAxis} type="category" dataKey="label" width=${130} tick=${{ fontSize: 12 }} />
           <${Tooltip} content=${html`<${StockpileTooltip} />`} />
-          <${ReferenceLine} x=${400} stroke="#1A1D23" strokeDasharray="6 3" label=${{ value: 'IEA release 400', position: 'top', style: { fontSize: 11, fill: '#1A1D23' } }} />
+          <${ReferenceLine} x=${400} stroke="#1A1D23" strokeDasharray="6 3" label=${{ value: 'Uvolněné rezervy IEA: 400 mil.', position: 'top', style: { fontSize: 11, fill: '#1A1D23' } }} />
           <${Bar} dataKey="need" radius=${[0, 3, 3, 0]}>
             ${STOCKPILE_DATA.map((d, i) => html`<${Cell} key=${i} fill=${d.color} />`)}
             <${LabelList} dataKey="need" position="right" formatter=${v => `${fmtNum(v)} mil.`} style=${{ fontSize: 11, fill: '#64748B' }} />
@@ -447,7 +452,7 @@ function CzechScenariosTable() {
   return html`
     <div class="mb-8">
       <h3 class="font-serif text-lg font-bold text-brand-dark mb-1">Scénáře pro Českou republiku</h3>
-      <p class="text-sm text-brand-gray mb-4">Odhady dopadů na CPI a HDP pro různé úrovně narušení.</p>
+      <p class="text-sm text-brand-gray mb-4">Partial equilibrium model: cena ropy = předkrizový Brent × (1 + šok / (εd + εs)), kde εd = −0,10 a εs = 0,05 (centrální odhady). TTF amplifikace 1,2×. CPI dopad: IMF pravidlo +10 % energie ≈ +0,4 p.b. inflace (EU), pro ČR 2× amplifikace (vyšší váha energií ve spotřebním koši). HDP dopad: Hamiltonův koeficient −1,4 % na 10 % nárůst ceny ropy, pro ČR 1,5× (vyšší energetická náročnost). Rozpětí odráží nejistotu v elasticitách.</p>
       <div class="overflow-x-auto">
         <table class="w-full scenario-table text-sm">
           <thead><tr><th>Scénář</th><th>Brent ($/bbl)</th><th>TTF (€/MWh)</th><th>CPI dopad (p.b.)</th><th>HDP dopad (p.b.)</th></tr></thead>
@@ -742,7 +747,7 @@ function Simulator() {
             <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
               <p class="text-xs text-brand-gray">Zásobová potřeba</p>
               <p class="text-xl font-bold font-mono text-brand-dark stat-value">${fmtNum(results.totalStockpileNeed, 0)}</p>
-              <p class="text-xs text-brand-gray">mil. bbl · IEA pokrývá ${results.stockpileSufficiency < 100 ? fmtNum(results.stockpileSufficiency * 100, 0) : '∞'} %</p>
+              <p class="text-xs text-brand-gray">mil. bbl · Rezervy IEA pokrývají ${results.stockpileSufficiency < 100 ? fmtNum(results.stockpileSufficiency * 100, 0) : '∞'} %</p>
             </div>
             <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
               <p class="text-xs text-brand-gray">CPI dopad ČR</p>
