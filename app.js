@@ -53,10 +53,10 @@ const REFERENCE_DATA = {
 };
 
 const SENSITIVITY_DATA = [
-  { label: 'εd=−0,07 εs=0,03', shock10: 136, shock20: 204 },
-  { label: 'εd=−0,10 εs=0,05', shock10: 113, shock20: 158 },
-  { label: 'εd=−0,10 εs=0,10', shock10: 102, shock20: 136 },
-  { label: 'εd=−0,14 εs=0,15', shock10: 91,  shock20: 115 },
+  { label: 'εd=−0,07 εs=0,03', shock10: 136, shock20: 204, desc: 'Krizový režim: poptávka zcela nepružná, nabídka nereaguje. Lidé nemohou přestat jezdit, továrny nemohou změnit palivo, OPEC spare capacity je za Hormuzem.', isBaseline: false },
+  { label: 'εd=−0,10 εs=0,05', shock10: 113, shock20: 158, desc: 'Centrální odhad: mírná reakce poptávky (omezení neesenciální spotřeby), částečná nabídková odpověď přes OPEC spare capacity mimo Zálivu.', isBaseline: true },
+  { label: 'εd=−0,10 εs=0,10', shock10: 102, shock20: 136, desc: 'Optimistický: vyšší nabídková reakce — rychlejší nárůst břidlice, aktivace marginálních producentů (Brazílie, Guyana). Realistické po 2–3 měsících.', isBaseline: false },
+  { label: 'εd=−0,14 εs=0,15', shock10: 91,  shock20: 115, desc: 'Střednědobý: ekonomika se přizpůsobila — fuel switching, úspory, nová produkce online. Odpovídá situaci po 4–6 měsících krize.', isBaseline: false },
 ];
 
 const STOCKPILE_DATA = [
@@ -359,17 +359,18 @@ function KeyFindings() {
 
 function SensitivityTooltip({ active, payload, label }) {
   if (!active || !payload) return null;
+  const d = payload[0]?.payload;
   return html`
-    <div class="bg-white border border-brand-line rounded-lg p-3 shadow-sm text-sm">
-      <p class="font-semibold text-brand-dark mb-1">${label}</p>
+    <div class="bg-white border border-brand-line rounded-lg p-3 shadow-sm text-sm" style=${{ maxWidth: '320px' }}>
+      <p class="font-semibold text-brand-dark mb-1">${label}${d?.isBaseline ? ' ★ Centrální odhad' : ''}</p>
       ${payload.map((p, i) => html`
         <p key=${i} style=${{ color: p.color }}>
           ${p.name}: <span class="font-mono font-bold">${fmtNum(p.value)} $/bbl</span>
         </p>
       `)}
-      ${payload[0]?.payload?.shock10 === 113 && html`
-        <p class="text-xs text-brand-gray mt-2 border-t border-brand-line pt-2">
-          Centrální odhad 10 % šoku (113) ≈ aktuální Brent (112) — model konzistentní s trhem
+      ${d?.desc && html`
+        <p class="text-xs text-brand-gray mt-2 border-t border-brand-line pt-2 leading-relaxed">
+          ${d.desc}
         </p>
       `}
     </div>
@@ -380,7 +381,7 @@ function BrentSensitivityChart() {
   return html`
     <div class="mb-12">
       <h3 class="font-serif text-lg font-bold text-brand-dark mb-1">Citlivostní matice Brent</h3>
-      <p class="text-sm text-brand-gray mb-4">Dopad na cenu ropy při různých kombinacích elasticit. Předkrizový Brent: 68 $/bbl.</p>
+      <p class="text-sm text-brand-gray mb-4">Dopad na cenu ropy při různých kombinacích elasticit. Předkrizový Brent: 68 $/bbl. Každý sloupec představuje jinou úroveň schopnosti trhu přizpůsobit se šoku.</p>
       <${ResponsiveContainer} width="100%" height=${360}>
         <${BarChart} data=${SENSITIVITY_DATA} barCategoryGap="25%" barGap=${4}>
           <${CartesianGrid} strokeDasharray="3 3" vertical=${false} />
@@ -388,16 +389,26 @@ function BrentSensitivityChart() {
           <${YAxis} domain=${[60, 220]} tick=${{ fontSize: 12 }} label=${{ value: '$/bbl', position: 'insideTopLeft', offset: -5, style: { fontSize: 11, fill: '#94A3B8' } }} />
           <${Tooltip} content=${html`<${SensitivityTooltip} />`} />
           <${Legend} wrapperStyle=${{ fontSize: 13 }} />
-          <${ReferenceLine} y=${112} stroke="#1A1D23" strokeDasharray="6 3" label=${{ value: 'Aktuální Brent 112', position: 'right', style: { fontSize: 11, fill: '#1A1D23' } }} />
+          <${ReferenceLine} y=${REFERENCE_DATA.currentCrisis.brent} stroke="#1A1D23" strokeDasharray="6 3" label=${{ value: 'Aktuální Brent ~' + Math.round(REFERENCE_DATA.currentCrisis.brent), position: 'right', style: { fontSize: 11, fill: '#1A1D23' } }} />
           <${ReferenceLine} y=${68} stroke="#94A3B8" strokeDasharray="3 3" label=${{ value: 'Předkrizový 68', position: 'right', style: { fontSize: 11, fill: '#94A3B8' } }} />
-          <${Bar} dataKey="shock10" name="Šok 10 %" fill="#B45309" radius=${[3, 3, 0, 0]}>
+          <${Bar} dataKey="shock10" name="Šok 10 %" radius=${[3, 3, 0, 0]}>
+            ${SENSITIVITY_DATA.map((d, i) => html`<${Cell} key=${i} fill=${d.isBaseline ? '#92400E' : '#B45309'} strokeWidth=${d.isBaseline ? 2 : 0} stroke=${d.isBaseline ? '#1A1D23' : 'none'} />`)}
             <${LabelList} dataKey="shock10" position="top" style=${{ fontSize: 11, fill: '#B45309', fontWeight: 600 }} />
           <//>
-          <${Bar} dataKey="shock20" name="Šok 20 %" fill="#DC2626" radius=${[3, 3, 0, 0]}>
+          <${Bar} dataKey="shock20" name="Šok 20 %" radius=${[3, 3, 0, 0]}>
+            ${SENSITIVITY_DATA.map((d, i) => html`<${Cell} key=${i} fill=${d.isBaseline ? '#B91C1C' : '#DC2626'} strokeWidth=${d.isBaseline ? 2 : 0} stroke=${d.isBaseline ? '#1A1D23' : 'none'} />`)}
             <${LabelList} dataKey="shock20" position="top" style=${{ fontSize: 11, fill: '#DC2626', fontWeight: 600 }} />
           <//>
         <//>
       <//>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+        ${SENSITIVITY_DATA.map((d, i) => html`
+          <div key=${i} class="text-xs p-3 rounded-lg border ${d.isBaseline ? 'bg-orange-50 border-brand-orange' : 'bg-brand-card border-brand-line'}">
+            <p class="font-semibold text-brand-dark mb-1">${d.label}${d.isBaseline ? ' ★' : ''}</p>
+            <p class="text-brand-gray leading-relaxed">${d.desc}</p>
+          </div>
+        `)}
+      </div>
     </div>
   `;
 }
