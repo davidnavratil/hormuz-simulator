@@ -3,7 +3,7 @@
    David Navrátil · Peníze, procenta a prosperita · Březen 2026
    ============================================================ */
 
-import { useState, useMemo, useCallback, createElement } from 'react';
+import { useState, useMemo, useCallback, useEffect, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import htm from 'htm';
 import {
@@ -12,6 +12,16 @@ import {
 } from 'recharts';
 
 const html = htm.bind(createElement);
+
+// ============================================================
+// LIVE PRICE LOADING
+// ============================================================
+
+let livePrices = null;
+try {
+  const resp = await fetch('prices.json');
+  if (resp.ok) livePrices = await resp.json();
+} catch { /* use defaults */ }
 
 // ============================================================
 // CONSTANTS & DATA
@@ -33,9 +43,13 @@ const REFERENCE_DATA = {
     energyIntensityAboveEU: 20,
   },
   currentCrisis: {
-    preCrisisBrent: 68, currentBrent: 112, peakBrent: 126,
-    preCrisisTTF: 36, currentTTF: 60,
+    preCrisisBrent: livePrices?.preCrisisBrent ?? 68,
+    currentBrent: livePrices?.brent ?? 112,
+    peakBrent: livePrices?.peakBrent ?? 126,
+    preCrisisTTF: livePrices?.preCrisisTTF ?? 36,
+    currentTTF: livePrices?.ttf ?? 60,
   },
+  pricesUpdated: livePrices?.updated ?? null,
 };
 
 const SENSITIVITY_DATA = [
@@ -271,8 +285,8 @@ function HeroSection() {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
         <${StatCard} label="Ropa přes Hormuz" value="20 mb/d" description="25 % globální námořní přepravy" accent="orange" />
         <${StatCard} label="Katarský LNG" value="82 MT" description="19 % globálního LNG obchodu" accent="orange" />
-        <${StatCard} label="Brent aktuálně" value="~112 $/bbl" description="Předkrizová cena: ~68 $/bbl" accent="red" />
-        <${StatCard} label="TTF aktuálně" value="~60 €/MWh" description="Předkrizová cena: ~36 €/MWh" accent="red" />
+        <${StatCard} label="Brent aktuálně" value="~${REFERENCE_DATA.currentCrisis.currentBrent} $/bbl" description="Předkrizová cena: ~${REFERENCE_DATA.currentCrisis.preCrisisBrent} $/bbl" accent="red" />
+        <${StatCard} label="TTF aktuálně" value="~${REFERENCE_DATA.currentCrisis.currentTTF} €/MWh" description="Předkrizová cena: ~${REFERENCE_DATA.currentCrisis.preCrisisTTF} €/MWh" accent="red" />
       </div>
     </section>
   `;
@@ -778,6 +792,11 @@ function Footer() {
         Model vychází z akademické literatury: Kilian (2009, AER), Hamilton (2003, JoE), Caldara, Cavallo ${'&'} Iacoviello (2019, JME), Baumeister ${'&'} Hamilton (2019, AER), Blanchard ${'&'} Galí (2007, NBER).
         Tržní data: IEA, EIA, Bloomberg, S${'&'}P Global. Březen 2026.
       </p>
+      ${REFERENCE_DATA.pricesUpdated && html`
+        <p class="text-xs text-brand-gray mt-2">
+          Ceny aktualizovány: ${new Date(REFERENCE_DATA.pricesUpdated).toLocaleDateString('cs-CZ')} · Zdroj: Yahoo Finance
+        </p>
+      `}
     </footer>
   `;
 }
