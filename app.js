@@ -86,7 +86,7 @@ const CZECH_SCENARIOS = [
   { name: '20 % (3 měs.)', brent: '115–204', ttf: '65–140', cpi: '+5 až +12', gdp: '−2,0 až −4,5', severity: 'significant' },
   { name: '20 % (6 měs.)', brent: 'Peak 115–204 → 95–155', ttf: 'Peak 65–140 → 55–110', cpi: '+5 až +12', gdp: '−3,0 až −6,0', severity: 'significant', note: 'Peak v prvních týdnech (krátkodobé elasticity), pak postupný pokles díky přizpůsobení nabídky a poptávky. Kumulativní HDP dopad vyšší kvůli délce.' },
   { name: '20 % + panika (3 měs.)', brent: '205–285', ttf: '100–200+', cpi: '+10 až +18', gdp: '−3,5 až −7,0', severity: 'severe' },
-  { name: '20 % + panika (6 měs.)', brent: 'Peak 205–285 → 130–190', ttf: 'Peak 100–200 → 70–140', cpi: '+10 až +20', gdp: '−5,0 až −9,0', severity: 'severe', note: 'Nejhorší scénář: panický peak jako u 3měsíčního scénáře, ale prolongovaná krize způsobí hlubší strukturální škody (Hamiltonova asymetrie). Část podniků se po obnovení průlivu už nerestartuje.' },
+  { name: '20 % + panika (6 měs.)', brent: 'Peak 205–285 → 130–190', ttf: 'Peak 100–200 → 70–140', cpi: '+10 až +20', gdp: '−5,0 až −9,0', severity: 'severe', note: 'Nejhorší scénář: panický peak jako u 3měsíčního scénáře, ale dlouhotrvající krize způsobí hlubší strukturální škody (Hamiltonova asymetrie). Část podniků se po obnovení průlivu už nerestartuje.' },
   { name: 'Katar izolovaně', brent: '~75–80', ttf: '85–140', cpi: '+3 až +7', gdp: '−1,0 až −2,0', severity: 'moderate' },
 ];
 
@@ -453,21 +453,23 @@ function CzechScenariosTable() {
   return html`
     <div class="mb-8">
       <h3 class="font-serif text-lg font-bold text-brand-dark mb-1">Scénáře pro Českou republiku</h3>
-      <p class="text-sm text-brand-gray mb-4"><strong>Metodologie:</strong> Partial equilibrium model s dvou-fázovou cenovou dynamikou. <strong>Cena ropy:</strong> Brent = předkrizová cena × (1 + šok / (εd + εs)). Krátkodobé elasticity: εd = −0,06 až −0,20 (centrální −0,10), εs = 0,004 až 0,10 (centrální 0,05). U delších scénářů (6+ měs.) se rozlišuje <em>peak</em> (krátkodobé elasticity, první 2–4 týdny) a <em>stabilizace</em> (střednědobé elasticity narostou o ~40 % díky fuel switchingu, destrukci poptávky a reakci břidlice). <strong>Panika:</strong> multiplikátor preventivní poptávky 1,3–1,8× (Kilian 2009, AER). <strong>TTF:</strong> amplifikace 1,2× oproti Brentu (vyšší volatilita plynového trhu). <strong>CPI dopad (ČR):</strong> IMF pravidlo +10 % energie ≈ +0,4 p.b. inflace, pro ČR 2× amplifikace (váha bydlení a utilit 26 % ve spotřebním koši). <strong>HDP dopad (ČR):</strong> Hamiltonův koeficient −1,4 % na 10 % NOPI (Hamilton 2003), pro ČR 1,5× (energetická náročnost ~20 % nad EU průměrem). Rozpětí odráží nejistotu v elasticitách.</p>
+      <p class="text-sm text-brand-gray mb-4">Metodologie: Partial equilibrium model s dvou-fázovou cenovou dynamikou. Cena ropy: Brent = předkrizová cena × (1 + šok / (εd + εs)). Krátkodobé elasticity: εd = −0,06 až −0,20 (centrální −0,10), εs = 0,004 až 0,10 (centrální 0,05). U delších scénářů (6+ měs.) se rozlišuje peak (krátkodobé elasticity, první 2–4 týdny) a stabilizace (střednědobé elasticity narostou o ~40 % díky fuel switchingu, destrukci poptávky a reakci břidlice). Panika: multiplikátor preventivní poptávky 1,3–1,8× (Kilian 2009, AER). TTF: amplifikace 1,2× oproti Brentu (vyšší volatilita plynového trhu). CPI dopad (ČR): IMF pravidlo +10 % energie ≈ +0,4 p.b. inflace, pro ČR 2× amplifikace (váha bydlení a utilit 26 % ve spotřebním koši). HDP dopad (ČR): Hamiltonův koeficient −1,4 % na 10 % NOPI (Hamilton 2003), pro ČR 1,5× (energetická náročnost ~20 % nad EU průměrem). Rozpětí odráží nejistotu v elasticitách.</p>
       <div class="overflow-x-auto">
         <table class="w-full scenario-table text-sm">
           <thead><tr><th>Scénář</th><th>Brent ($/bbl)</th><th>TTF (€/MWh)</th><th>CPI dopad (p.b.)</th><th>HDP dopad (p.b.)</th></tr></thead>
           <tbody>
-            ${CZECH_SCENARIOS.map((s, i) => html`
+            ${CZECH_SCENARIOS.flatMap((s, i) => {
+              const result = [html`
               <tr key=${i} class=${s.severity === 'severe' ? 'highlight' : ''}>
                 <td class="font-semibold text-brand-dark">${s.name}</td>
                 <td class="font-mono text-xs">${s.brent}</td>
                 <td class="font-mono text-xs">${s.ttf}</td>
                 <td><span class="inline-block px-2 py-0.5 rounded text-xs font-semibold ${badge(s.severity)}">${s.cpi}</span></td>
                 <td><span class="inline-block px-2 py-0.5 rounded text-xs font-semibold ${badge(s.severity)}">${s.gdp}</span></td>
-              </tr>
-              ${s.note ? html`<tr key="${i}-note" class="note-row"><td colspan="5" class="text-xs text-brand-gray italic pt-0 pb-2 px-3" style="border-top:none;background:rgba(251,146,60,0.04)">${s.note}</td></tr>` : ''}
-            `)}
+              </tr>`];
+              if (s.note) result.push(html`<tr key="${i}n"><td colSpan="5" class="text-xs text-brand-gray italic pt-0 pb-2 px-3 bg-orange-50 border-t-0">${s.note}</td></tr>`);
+              return result;
+            })}
           </tbody>
         </table>
       </div>
