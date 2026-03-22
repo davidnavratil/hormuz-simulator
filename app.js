@@ -320,6 +320,12 @@ function HeroSection() {
         David Navrátil · <a href="https://davidnavratil.substack.com" target="_blank" rel="noopener"
           class="text-brand-orange hover:underline">Peníze, procenta a prosperita</a> · Březen 2026
       </p>
+      <p class="mt-2">
+        <a href="https://davidnavratil.substack.com/p/anatomie-nejvetsiho-ropneho-soku" target="_blank" rel="noopener"
+          class="inline-flex items-center gap-1.5 text-sm font-medium text-brand-orange hover:underline">
+          📖 Přečtěte si kompletní analýzu na Substacku →
+        </a>
+      </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
         <${StatCard} label="Ropa přes Hormuz" value="20 mb/d" description="~20 % světové spotřeby ropy" accent="orange" />
         <${StatCard} label="Katarský LNG" value="82 MT" description="19 % globálního obchodu se zkapalněným plynem" accent="orange" />
