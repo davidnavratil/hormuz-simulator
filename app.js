@@ -320,12 +320,20 @@ function HeroSection() {
         David Navrátil · <a href="https://davidnavratil.substack.com" target="_blank" rel="noopener"
           class="text-brand-orange hover:underline">Peníze, procenta a prosperita</a> · Březen 2026
       </p>
-      <p class="mt-2">
-        <a href="https://davidnavratil.substack.com/p/anatomie-nejvetsiho-ropneho-soku" target="_blank" rel="noopener"
-          class="inline-flex items-center gap-1.5 text-sm font-medium text-brand-orange hover:underline">
-          📖 Přečtěte si kompletní analýzu na Substacku →
-        </a>
-      </p>
+      <a href="https://davidnavratil.substack.com/p/anatomie-nejvetsiho-ropneho-soku" target="_blank" rel="noopener"
+        class="mt-6 block max-w-xl rounded-lg border border-brand-line hover:border-brand-orange transition-colors overflow-hidden bg-brand-card group">
+        <div class="flex">
+          <div class="flex-shrink-0 w-28 sm:w-36">
+            <img src="https://substackcdn.com/image/fetch/w_300,h_300,c_fill,f_auto,q_auto:good/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F101d15bd-150b-4993-a4b7-dbd8721d2003_1024x1024.heic"
+              alt="" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="p-3 sm:p-4 flex flex-col justify-center min-w-0">
+            <p class="text-xs text-brand-gray mb-1">Kompletní analýza na Substacku</p>
+            <p class="text-sm font-serif font-bold text-brand-dark leading-snug group-hover:text-brand-orange transition-colors line-clamp-2">Anatomie největšího ropného šoku v historii</p>
+            <p class="text-xs text-brand-gray mt-1.5 leading-relaxed line-clamp-2 hidden sm:block">Proč standardní modely podceňují ropný šok a jak vypadá skutečná aritmetika bolesti pro český průmysl.</p>
+          </div>
+        </div>
+      </a>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
         <${StatCard} label="Ropa přes Hormuz" value="20 mb/d" description="~20 % světové spotřeby ropy" accent="orange" />
         <${StatCard} label="Katarský LNG" value="82 MT" description="19 % globálního obchodu se zkapalněným plynem" accent="orange" />
