@@ -53,10 +53,10 @@ const REFERENCE_DATA = {
 };
 
 const SENSITIVITY_DATA = [
-  { label: 'εd=−0,07 εs=0,03', shock10: 136, shock20: 204, desc: 'Krizový režim: poptávka zcela nepružná, nabídka nereaguje. Lidé nemohou přestat jezdit, továrny nemohou změnit palivo, OPEC spare capacity je za Hormuzem.', isBaseline: false },
-  { label: 'εd=−0,10 εs=0,05', shock10: 113, shock20: 158, desc: 'Centrální odhad: mírná reakce poptávky (omezení neesenciální spotřeby), částečná nabídková odpověď přes OPEC spare capacity mimo Zálivu.', isBaseline: true },
-  { label: 'εd=−0,10 εs=0,10', shock10: 102, shock20: 136, desc: 'Optimistický: vyšší nabídková reakce — rychlejší nárůst břidlice, aktivace marginálních producentů (Brazílie, Guyana). Realistické po 2–3 měsících.', isBaseline: false },
-  { label: 'εd=−0,14 εs=0,15', shock10: 91,  shock20: 115, desc: 'Střednědobý: ekonomika se přizpůsobila — fuel switching, úspory, nová produkce online. Odpovídá situaci po 4–6 měsících krize.', isBaseline: false },
+  { label: 'Krizový režim', subtitle: 'εd=−0,07 εs=0,03', shock10: 136, shock20: 204, desc: 'Poptávka zcela nepružná, nabídka nereaguje. Lidé nemohou přestat jezdit, továrny nemohou změnit palivo, OPEC spare capacity je za Hormuzem.', isBaseline: false },
+  { label: 'Centrální odhad ★', subtitle: 'εd=−0,10 εs=0,05', shock10: 113, shock20: 158, desc: 'Mírná reakce poptávky (drobné omezování spotřeby), částečná nabídková odpověď přes OPEC spare capacity mimo Zálivu.', isBaseline: true },
+  { label: 'Optimistický', subtitle: 'εd=−0,10 εs=0,10', shock10: 102, shock20: 136, desc: 'Vyšší nabídková reakce — rychlejší nárůst břidlice, aktivace marginálních producentů (Brazílie, Guyana). Realistické po 2–3 měsících.', isBaseline: false },
+  { label: 'Střednědobý', subtitle: 'εd=−0,14 εs=0,15', shock10: 91,  shock20: 115, desc: 'Ekonomika se přizpůsobila — fuel switching, úspory, nová produkce online. Odpovídá situaci po 4–6 měsících krize.', isBaseline: false },
 ];
 
 const STOCKPILE_DATA = [
@@ -362,7 +362,7 @@ function SensitivityTooltip({ active, payload, label }) {
   const d = payload[0]?.payload;
   return html`
     <div class="bg-white border border-brand-line rounded-lg p-3 shadow-sm text-sm" style=${{ maxWidth: '320px' }}>
-      <p class="font-semibold text-brand-dark mb-1">${label}${d?.isBaseline ? ' ★ Centrální odhad' : ''}</p>
+      <p class="font-semibold text-brand-dark mb-1">${label}</p>
       ${payload.map((p, i) => html`
         <p key=${i} style=${{ color: p.color }}>
           ${p.name}: <span class="font-mono font-bold">${fmtNum(p.value)} $/bbl</span>
@@ -385,7 +385,13 @@ function BrentSensitivityChart() {
       <${ResponsiveContainer} width="100%" height=${360}>
         <${BarChart} data=${SENSITIVITY_DATA} barCategoryGap="25%" barGap=${4}>
           <${CartesianGrid} strokeDasharray="3 3" vertical=${false} />
-          <${XAxis} dataKey="label" tick=${{ fontSize: 11 }} interval=${0} />
+          <${XAxis} dataKey="label" tick=${({ x, y, payload }) => {
+            const d = SENSITIVITY_DATA.find(s => s.label === payload.value);
+            return html`<g transform="translate(${x},${y})">
+              <text x=${0} y=${0} dy=${14} textAnchor="middle" fill=${d?.isBaseline ? '#B45309' : '#475569'} fontSize=${11} fontWeight=${d?.isBaseline ? 700 : 500}>${payload.value}</text>
+              <text x=${0} y=${0} dy=${28} textAnchor="middle" fill="#94A3B8" fontSize=${10}>${d?.subtitle || ''}</text>
+            </g>`;
+          }} interval=${0} height=${50} />
           <${YAxis} domain=${[60, 220]} tick=${{ fontSize: 12 }} label=${{ value: '$/bbl', position: 'insideTopLeft', offset: -5, style: { fontSize: 11, fill: '#94A3B8' } }} />
           <${Tooltip} content=${html`<${SensitivityTooltip} />`} />
           <${Legend} wrapperStyle=${{ fontSize: 13 }} />
@@ -404,8 +410,9 @@ function BrentSensitivityChart() {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
         ${SENSITIVITY_DATA.map((d, i) => html`
           <div key=${i} class="text-xs p-3 rounded-lg border ${d.isBaseline ? 'bg-orange-50 border-brand-orange' : 'bg-brand-card border-brand-line'}">
-            <p class="font-semibold text-brand-dark mb-1">${d.label}${d.isBaseline ? ' ★' : ''}</p>
-            <p class="text-brand-gray leading-relaxed">${d.desc}</p>
+            <p class="font-semibold text-brand-dark mb-1">${d.label}</p>
+            <p class="text-brand-gray leading-relaxed mb-1">${d.desc}</p>
+            <p class="font-mono text-brand-gray" style=${{ fontSize: 10 }}>${d.subtitle}</p>
           </div>
         `)}
       </div>
