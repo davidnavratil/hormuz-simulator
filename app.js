@@ -82,11 +82,11 @@ const DESTRUCTION_GAS = [
 ];
 
 const CZECH_SCENARIOS = [
-  { name: '10 % (3 měs.)', brent: '91–136', ttf: '50–75', cpi: '+1 až +4', gdp: '−0,8 až −2,0', severity: 'moderate' },
-  { name: '20 % (3 měs.)', brent: '115–204', ttf: '65–140', cpi: '+3 až +7', gdp: '−1,5 až −3,5', severity: 'significant' },
-  { name: '20 % (6 měs.)', brent: 'Peak 115–204 → 95–155', ttf: 'Peak 65–140 → 55–110', cpi: '+3 až +7', gdp: '−2,5 až −5,0', severity: 'significant', note: 'Peak v prvních týdnech (krátkodobé elasticity), pak postupný pokles díky přizpůsobení nabídky a poptávky. Kumulativní HDP dopad vyšší kvůli délce.' },
-  { name: '20 % + panika (3 měs.)', brent: '205–285', ttf: '100–200+', cpi: '+6 až +11', gdp: '−3,0 až −5,5', severity: 'severe' },
-  { name: '20 % + panika (6 měs.)', brent: 'Peak 205–285 → 130–190', ttf: 'Peak 100–200 → 70–140', cpi: '+6 až +12', gdp: '−4,0 až −7,0', severity: 'severe', note: 'Nejhorší scénář: panický peak jako u 3měsíčního scénáře, ale dlouhotrvající krize způsobí hlubší strukturální škody (Hamiltonova asymetrie). Část podniků se po obnovení průlivu už nerestartuje.' },
+  { name: '10 % (3 měs.)', brent: '96–136', ttf: '54–79', cpi: '+1 až +2', gdp: '−0,7 až −1,5', severity: 'moderate' },
+  { name: '20 % (3 měs.)', brent: '125–204', ttf: '72–122', cpi: '+1 až +3', gdp: '−1,2 až −2,8', severity: 'significant' },
+  { name: '20 % (6 měs.)', brent: 'Peak 125–204 → 98–139', ttf: 'Peak 72–122 → 55–81', cpi: '+2 až +5', gdp: '−1,9 až −4,4', severity: 'significant', note: 'Peak v prvních týdnech (krátkodobé elasticity), pak postupný pokles díky přizpůsobení nabídky a poptávky. Kumulativní HDP dopad vyšší kvůli délce.' },
+  { name: '20 % + panika (3 měs.)', brent: '142–313', ttf: '83–192', cpi: '+2 až +5', gdp: '−1,5 až −4,6', severity: 'severe' },
+  { name: '20 % + panika (6 měs.)', brent: 'Peak 142–313 → 105–180', ttf: 'Peak 83–192 → 59–107', cpi: '+3 až +8', gdp: '−2,3 až −6,9', severity: 'severe', note: 'Nejhorší scénář: panický peak jako u 3měsíčního scénáře, ale dlouhotrvající krize způsobí hlubší strukturální škody (Hamiltonova asymetrie). Část podniků se po obnovení průlivu už nerestartuje.' },
   { name: 'Katar izolovaně', brent: '~75–80', ttf: '85–140', cpi: '+2 až +4', gdp: '−0,8 až −1,5', severity: 'moderate' },
 ];
 
