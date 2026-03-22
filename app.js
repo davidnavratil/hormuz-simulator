@@ -841,13 +841,6 @@ function Simulator() {
             </div>
           </div>
 
-          <div class="grid grid-cols-1 gap-3 mb-2">
-            <div class="bg-brand-card rounded-lg p-3 border border-brand-line">
-              <p class="text-xs text-brand-gray">Destrukce poptávky</p>
-              <p class="text-lg font-bold font-mono text-brand-dark">Peak ${fmtNum(results.demandDestructionPeak, 1)} mb/d <span class="text-sm font-normal text-brand-gray">(${fmtNum(results.demandDestructionPeak / REFERENCE_DATA.globalConsumption * 100, 1)} %)</span></p>
-              <p class="text-sm font-mono text-brand-gray">12M ∅ ${fmtNum(results.demandDestructionAvg, 1)} mb/d (${fmtNum(results.demandDestructionAvg / REFERENCE_DATA.globalConsumption * 100, 1)} %)</p>
-            </div>
-          </div>
 
           <${TrajectoryChart} results=${results} params=${params} />
           <${WarningPanel} results=${results} params=${params} />
