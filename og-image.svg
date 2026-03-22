@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#FFFFFF"/>
+  <rect x="0" y="0" width="6" height="630" fill="#B45309"/>
+  
+  <!-- Title area -->
+  <text x="80" y="120" font-family="Georgia, serif" font-size="16" fill="#B45309" letter-spacing="3" text-transform="uppercase">ANALÝZA</text>
+  <text x="80" y="200" font-family="Georgia, serif" font-size="64" font-weight="900" fill="#1A1D23">Když se zavře brána</text>
+  <text x="80" y="260" font-family="Georgia, serif" font-size="24" fill="#94A3B8" font-style="italic">Anatomie největšího ropného šoku v historii</text>
+  
+  <!-- Stats -->
+  <rect x="80" y="310" width="240" height="120" rx="8" fill="#F8FAFC" stroke="#E2E8F0"/>
+  <text x="100" y="345" font-family="system-ui, sans-serif" font-size="13" fill="#94A3B8">Ropa Brent</text>
+  <text x="100" y="395" font-family="SF Mono, monospace" font-size="40" font-weight="700" fill="#B45309">~106 $</text>
+  <text x="100" y="418" font-family="system-ui, sans-serif" font-size="12" fill="#94A3B8">Předkrizová: ~68 $/bbl</text>
+  
+  <rect x="350" y="310" width="240" height="120" rx="8" fill="#F8FAFC" stroke="#E2E8F0"/>
+  <text x="370" y="345" font-family="system-ui, sans-serif" font-size="13" fill="#94A3B8">Plyn TTF</text>
+  <text x="370" y="395" font-family="SF Mono, monospace" font-size="40" font-weight="700" fill="#DC2626">~59 €</text>
+  <text x="370" y="418" font-family="system-ui, sans-serif" font-size="12" fill="#94A3B8">Předkrizová: ~36 €/MWh</text>
+
+  <rect x="620" y="310" width="240" height="120" rx="8" fill="#F8FAFC" stroke="#E2E8F0"/>
+  <text x="640" y="345" font-family="system-ui, sans-serif" font-size="13" fill="#94A3B8">Výpadek nabídky</text>
+  <text x="640" y="395" font-family="SF Mono, monospace" font-size="40" font-weight="700" fill="#1A1D23">14+ mb/d</text>
+  <text x="640" y="418" font-family="system-ui, sans-serif" font-size="12" fill="#94A3B8">~20 % světové spotřeby</text>
+
+  <!-- Tagline -->
+  <text x="80" y="520" font-family="system-ui, sans-serif" font-size="18" fill="#1A1D23">Interaktivní simulátor cenových dopadů na Českou republiku</text>
+  
+  <!-- Author -->
+  <text x="80" y="570" font-family="system-ui, sans-serif" font-size="15" fill="#94A3B8">David Navrátil · Peníze, procenta a prosperita · Březen 2026</text>
+</svg>

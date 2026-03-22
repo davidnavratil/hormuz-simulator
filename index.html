@@ -6,9 +6,27 @@
   <title>Když se zavře brána — Simulátor hormuzské krize</title>
   <meta name="description" content="Interaktivní analýza dopadů uzavření Hormuzského průlivu na globální trhy s ropou a plynem, se zaměřením na Českou republiku.">
   <meta name="author" content="David Navrátil">
+
+  <!-- Open Graph -->
   <meta property="og:title" content="Když se zavře brána — Simulátor hormuzské krize">
-  <meta property="og:description" content="Anatomie největšího ropného šoku v historii. Interaktivní simulátor cenových dopadů.">
+  <meta property="og:description" content="Anatomie největšího ropného šoku v historii. Interaktivní simulátor cenových dopadů na ropu, plyn a českou ekonomiku.">
   <meta property="og:type" content="article">
+  <meta property="og:url" content="https://davidnavratil.github.io/hormuz-simulator/">
+  <meta property="og:image" content="https://davidnavratil.github.io/hormuz-simulator/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="cs_CZ">
+  <meta property="og:site_name" content="Peníze, procenta a prosperita">
+  <meta property="article:author" content="David Navrátil">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Když se zavře brána — Simulátor hormuzské krize">
+  <meta name="twitter:description" content="Anatomie největšího ropného šoku v historii. Interaktivní simulátor cenových dopadů.">
+  <meta name="twitter:image" content="https://davidnavratil.github.io/hormuz-simulator/og-image.png">
+
+  <!-- Plausible Analytics (privacy-friendly, no cookies) -->
+  <script defer data-domain="davidnavratil.github.io" src="https://plausible.io/js/script.js"></script>
 
   <!-- Tailwind CSS Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -46,7 +64,6 @@
   <!-- Custom styles -->
   <link rel="stylesheet" href="style.css">
 
-  <!-- ESM import map: use esm.sh for React + Recharts -->
   <!-- ESM import map -->
   <script type="importmap">
   {
@@ -61,7 +78,18 @@
   </script>
 </head>
 <body class="bg-white text-brand-text antialiased">
-  <div id="root"></div>
+  <div id="root">
+    <!-- Loading fallback: shown until React mounts, or permanently if JS fails -->
+    <div style="max-width:800px;margin:80px auto;padding:0 24px;font-family:Georgia,serif">
+      <p style="color:#B45309;font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Analýza</p>
+      <h1 style="font-size:42px;font-weight:900;line-height:1.1;margin-bottom:16px;color:#1A1D23">Když se zavře brána</h1>
+      <p style="font-style:italic;color:#94A3B8;font-size:18px;margin-bottom:24px">Anatomie největšího ropného šoku v historii</p>
+      <p style="color:#94A3B8;font-size:14px">Načítání interaktivního simulátoru…</p>
+      <noscript>
+        <p style="color:#DC2626;font-size:14px;margin-top:16px">Pro zobrazení interaktivního simulátoru je potřeba zapnout JavaScript.</p>
+      </noscript>
+    </div>
+  </div>
   <script type="module" src="app.js"></script>
 </body>
 </html>
