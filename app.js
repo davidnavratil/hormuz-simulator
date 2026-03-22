@@ -411,13 +411,12 @@ function BrentSensitivityChart() {
           <${Legend} wrapperStyle=${{ fontSize: 13 }} />
           <${ReferenceLine} y=${REFERENCE_DATA.currentCrisis.brent} stroke="#1A1D23" strokeDasharray="6 3" label=${{ value: 'Aktuální Brent ~' + Math.round(REFERENCE_DATA.currentCrisis.brent), position: 'right', style: { fontSize: 11, fill: '#1A1D23' } }} />
           <${ReferenceLine} y=${68} stroke="#94A3B8" strokeDasharray="3 3" label=${{ value: 'Předkrizový 68', position: 'right', style: { fontSize: 11, fill: '#94A3B8' } }} />
-          <${Bar} dataKey="shock10" name="Šok 10 %" radius=${[3, 3, 0, 0]}>
-            ${SENSITIVITY_DATA.map((d, i) => html`<${Cell} key=${i} fill=${d.isBaseline ? '#92400E' : '#B45309'} strokeWidth=${d.isBaseline ? 2 : 0} stroke=${d.isBaseline ? '#1A1D23' : 'none'} />`)}
-            <${LabelList} dataKey="shock10" position="top" style=${{ fontSize: 11, fill: '#B45309', fontWeight: 600 }} />
+          <${Bar} dataKey="shock10" name="Šok 10 %" radius=${[3, 3, 0, 0]} fill="#B45309">
+            <${LabelList} dataKey="shock10" position="top" style=${{ fontSize: 12, fill: '#92400E', fontWeight: 700 }} />
           <//>
-          <${Bar} dataKey="shock20" name="Šok 20 %" radius=${[3, 3, 0, 0]}>
-            ${SENSITIVITY_DATA.map((d, i) => html`<${Cell} key=${i} fill=${d.isBaseline ? '#B91C1C' : '#DC2626'} strokeWidth=${d.isBaseline ? 2 : 0} stroke=${d.isBaseline ? '#1A1D23' : 'none'} />`)}
-            <${LabelList} dataKey="shock20" position="top" style=${{ fontSize: 11, fill: '#DC2626', fontWeight: 600 }} />
+          <${Bar} dataKey="shock20" name="Šok 20 %" radius=${[3, 3, 0, 0]} fill="#DC2626">
+
+            <${LabelList} dataKey="shock20" position="top" style=${{ fontSize: 12, fill: '#B91C1C', fontWeight: 700 }} />
           <//>
         <//>
       <//>
