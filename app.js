@@ -195,6 +195,7 @@ function computeSimulation(params) {
 
 function generateTrajectory(basePrice, peakPrice, months, pctChangeFund) {
   const points = [];
+  let endCrisisPrice = peakPrice;
   for (let m = 0; m <= 12; m++) {
     if (m === 0) {
       points.push({ month: 0, price: basePrice });
@@ -203,12 +204,15 @@ function generateTrajectory(basePrice, peakPrice, months, pctChangeFund) {
       const decay = Math.exp(-progress * 2);
       const fundPrice = basePrice * (1 + pctChangeFund * (1 - progress * 0.3));
       const premium = (peakPrice - fundPrice) * decay;
-      points.push({ month: m, price: fundPrice + premium });
+      const price = fundPrice + premium;
+      points.push({ month: m, price });
+      if (m === months) endCrisisPrice = price;
     } else {
       const recovery = (m - months) / (12 - months);
       const residual = 0.15;
-      const cur = peakPrice * (1 - recovery * (1 - residual));
-      points.push({ month: m, price: Math.max(basePrice * (1 + residual), cur) });
+      const floor = basePrice * (1 + residual);
+      const cur = endCrisisPrice + (floor - endCrisisPrice) * recovery;
+      points.push({ month: m, price: Math.max(floor, cur) });
     }
   }
   return points;
@@ -569,11 +573,11 @@ function TrajectoryChart({ results, params }) {
         <${LineChart} data=${data}>
           <${CartesianGrid} strokeDasharray="3 3" vertical=${false} />
           <${XAxis} dataKey="month" tick=${{ fontSize: 12 }} label=${{ value: 'Měsíc', position: 'insideBottomRight', offset: -5, style: { fontSize: 11, fill: '#94A3B8' } }} />
-          <${YAxis} domain=${[0, Math.ceil(maxP / 50) * 50 + 50]} tick=${{ fontSize: 12 }} />
+          <${YAxis} domain=${[0, Math.ceil(maxP / 25) * 25 + 25]} tickCount=${Math.ceil(maxP / 25) + 2} tick=${{ fontSize: 12 }} />
           <${Tooltip} formatter=${(v, name) => [`${fmtNum(v)} $/bbl`, name === 'baseline' ? 'Předkrizový' : name === 'fundamental' ? 'Fundamentální' : 'S panikou']}
             labelFormatter=${l => `Měsíc ${l}`} />
           <${Legend} formatter=${v => v === 'baseline' ? 'Předkrizový' : v === 'fundamental' ? 'Fundamentální' : 'S panikou'} wrapperStyle=${{ fontSize: 12 }} />
-          <${ReferenceLine} y=${112} stroke="#94A3B8" strokeDasharray="3 3" label=${{ value: 'Aktuální 112', position: 'right', style: { fontSize: 10, fill: '#94A3B8' } }} />
+          <${ReferenceLine} y=${REFERENCE_DATA.currentCrisis.brent} stroke="#94A3B8" strokeDasharray="3 3" label=${{ value: 'Aktuální ~' + Math.round(REFERENCE_DATA.currentCrisis.brent), position: 'right', style: { fontSize: 10, fill: '#94A3B8' } }} />
           <${Line} type="monotone" dataKey="baseline" stroke="#94A3B8" strokeDasharray="6 3" dot=${false} strokeWidth=${1} isAnimationActive=${false} />
           <${Line} type="monotone" dataKey="fundamental" stroke="#1A1D23" dot=${false} strokeWidth=${2} isAnimationActive=${false} />
           <${Line} type="monotone" dataKey="panic" stroke="#DC2626" dot=${false} strokeWidth=${2} isAnimationActive=${false} />
