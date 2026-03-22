@@ -283,10 +283,10 @@ function HeroSection() {
           class="text-brand-orange hover:underline">Peníze, procenta a prosperita</a> · Březen 2026
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
-        <${StatCard} label="Ropa přes Hormuz" value="20 mb/d" description="25 % globální námořní přepravy" accent="orange" />
-        <${StatCard} label="Katarský LNG" value="82 MT" description="19 % globálního LNG obchodu" accent="orange" />
-        <${StatCard} label="Brent aktuálně" value="~${REFERENCE_DATA.currentCrisis.currentBrent} $/bbl" description="Předkrizová cena: ~${REFERENCE_DATA.currentCrisis.preCrisisBrent} $/bbl" accent="red" />
-        <${StatCard} label="TTF aktuálně" value="~${REFERENCE_DATA.currentCrisis.currentTTF} €/MWh" description="Předkrizová cena: ~${REFERENCE_DATA.currentCrisis.preCrisisTTF} €/MWh" accent="red" />
+        <${StatCard} label="Ropa přes Hormuz" value="20 mb/d" description="~20 % světové spotřeby ropy" accent="orange" />
+        <${StatCard} label="Katarský LNG" value="82 MT" description="19 % globálního obchodu se zkapalněným plynem" accent="orange" />
+        <${StatCard} label="Ropa Brent" value="~${Math.round(REFERENCE_DATA.currentCrisis.currentBrent)} $/bbl" description="Předkrizová cena: ~${Math.round(REFERENCE_DATA.currentCrisis.preCrisisBrent)} $/bbl" accent="red" />
+        <${StatCard} label="Plyn TTF" value="~${Math.round(REFERENCE_DATA.currentCrisis.currentTTF)} €/MWh" description="Evropský benchmark ceny plynu. Před krizí: ~${Math.round(REFERENCE_DATA.currentCrisis.preCrisisTTF)} €/MWh" accent="red" />
       </div>
     </section>
   `;
