@@ -198,14 +198,18 @@ function computeSimulation(params) {
   const demandDestructionAvg = REFERENCE_DATA.globalConsumption * Math.abs(epsilonD) * avgPriceIncreasePct;
 
   // CPI/GDP based on 12M average (more realistic for macro impacts)
+  // Hamilton (2003): 10% NOPI → -1.4% annualized quarterly GDP growth
+  // For annual GDP level impact: ~1.4/4 = 0.35 per 10% price increase
+  // CZ amplification: 1.2× (higher energy intensity, export dependence)
+  const hamiltonAnnual = 0.35;
   const energyPriceIncreaseAvg = ((avgBrentPanic / preCrisisBrent) - 1) * 100;
   const cpiImpactCZAvg = energyPriceIncreaseAvg * 0.04 * REFERENCE_DATA.czech.cpiAmplification;
-  const gdpImpactCZAvg = -(energyPriceIncreaseAvg / 10) * 1.4 * 1.2;
+  const gdpImpactCZAvg = -(energyPriceIncreaseAvg / 10) * hamiltonAnnual * 1.2;
 
   // CPI/GDP based on peak
   const energyPriceIncreasePeak = pctPeakPanic * 100;
   const cpiImpactCZPeak = energyPriceIncreasePeak * 0.04 * REFERENCE_DATA.czech.cpiAmplification;
-  const gdpImpactCZPeak = -(energyPriceIncreasePeak / 10) * 1.4 * 1.2;
+  const gdpImpactCZPeak = -(energyPriceIncreasePeak / 10) * hamiltonAnnual * 1.2;
 
   return {
     brentFundamental: avgBrentFund, brentWithPanic: avgBrentPanic,
