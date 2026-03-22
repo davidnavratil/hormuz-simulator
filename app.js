@@ -172,16 +172,10 @@ function computeSimulation(params) {
   const totalStockpileNeed = dailyDeficit * duration * 30;
   const stockpileSufficiency = totalStockpileNeed > 0 ? REFERENCE_DATA.iaeRelease / totalStockpileNeed : Infinity;
 
-  const energyPriceIncrease = pctChangeWithPanic * 100;
-  const cpiImpactCZ = energyPriceIncrease * 0.04 * REFERENCE_DATA.czech.cpiAmplification;
-  const gdpImpactCZ = -(energyPriceIncrease / 10) * 1.4 * 1.2;
-
-  const demandDestruction = denom > 0
-    ? Math.abs(supplyShock * REFERENCE_DATA.globalConsumption * effectiveEpsilonD / denom)
-    : 0;
-
   // Peak values (short-term elasticities, no timeMultiplier adjustment)
   const denomPeak = Math.abs(epsilonD) + epsilonS;
+
+  // Demand destruction: peak uses short-term elasticity, avg computed after trajectory
   const pctPeakFund = denomPeak > 0 ? supplyShock / denomPeak : 0;
   const pctPeakPanic = pctPeakFund * activePanicMultiplier;
   const brentPeakFund = preCrisisBrent * (1 + pctPeakFund);
@@ -195,8 +189,12 @@ function computeSimulation(params) {
   const avgBrentPanic = panicTraj.reduce((s, p) => s + p.price, 0) / panicTraj.length;
   const avgTtfPanic = preCrisisTTF * (1 + ((avgBrentPanic / preCrisisBrent - 1)) * ttfMult);
 
-  const gasolineCZKPeak = brentPeakPanic * 0.42 + 12;
-  const gasolineCZKAvg = avgBrentPanic * 0.42 + 12;
+  // Demand destruction: peak (short-term) and avg from 12M price trajectory
+  const demandDestructionPeak = denomPeak > 0
+    ? Math.abs(supplyShock * REFERENCE_DATA.globalConsumption * Math.abs(epsilonD) / denomPeak)
+    : 0;
+  const avgPriceIncreasePct = (avgBrentPanic / preCrisisBrent - 1);
+  const demandDestructionAvg = REFERENCE_DATA.globalConsumption * Math.abs(epsilonD) * avgPriceIncreasePct;
 
   // CPI/GDP based on 12M average (more realistic for macro impacts)
   const energyPriceIncreaseAvg = ((avgBrentPanic / preCrisisBrent) - 1) * 100;
@@ -217,8 +215,7 @@ function computeSimulation(params) {
     totalStockpileNeed, stockpileSufficiency,
     cpiImpactCZ: cpiImpactCZAvg, cpiImpactCZPeak,
     gdpImpactCZ: gdpImpactCZAvg, gdpImpactCZPeak,
-    demandDestruction,
-    gasolineCZK: gasolineCZKAvg, gasolineCZKPeak,
+    demandDestructionPeak, demandDestructionAvg,
     dailyDeficit,
   };
 }
@@ -788,7 +785,7 @@ function Simulator() {
             <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
               <p class="text-xs text-brand-gray">Zásobová potřeba</p>
               <p class="text-xl font-bold font-mono text-brand-dark stat-value">${fmtNum(results.totalStockpileNeed, 0)}</p>
-              <p class="text-xs text-brand-gray">mil. bbl · Rezervy IEA pokrývají ${results.stockpileSufficiency < 100 ? fmtNum(results.stockpileSufficiency * 100, 0) : '∞'} %</p>
+              <p class="text-xs text-brand-gray">mil. bbl · Schválené uvolnění IEA (400 mil. bbl) pokrývá ${results.stockpileSufficiency < 100 ? fmtNum(results.stockpileSufficiency * 100, 0) : '∞'} %</p>
             </div>
             <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
               <p class="text-xs text-brand-gray">CPI dopad ČR</p>
@@ -802,16 +799,11 @@ function Simulator() {
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3 mb-2">
-            <div class="bg-brand-card rounded-lg p-3 border border-brand-line">
-              <p class="text-xs text-brand-gray">Odhad ceny benzínu ČR</p>
-              <p class="text-lg font-bold font-mono text-brand-dark">Peak ${fmtNum(results.gasolineCZKPeak, 0)} Kč/l</p>
-              <p class="text-sm font-mono text-brand-gray">12M ∅ ${fmtNum(results.gasolineCZK, 0)} Kč/l</p>
-            </div>
+          <div class="grid grid-cols-1 gap-3 mb-2">
             <div class="bg-brand-card rounded-lg p-3 border border-brand-line">
               <p class="text-xs text-brand-gray">Destrukce poptávky</p>
-              <p class="text-lg font-bold font-mono text-brand-dark">${fmtNum(results.demandDestruction, 1)} mb/d</p>
-              <p class="text-xs text-brand-gray">${fmtNum(results.demandDestruction / REFERENCE_DATA.globalConsumption * 100, 1)} % glob. spotřeby</p>
+              <p class="text-lg font-bold font-mono text-brand-dark">Peak ${fmtNum(results.demandDestructionPeak, 1)} mb/d <span class="text-sm font-normal text-brand-gray">(${fmtNum(results.demandDestructionPeak / REFERENCE_DATA.globalConsumption * 100, 1)} %)</span></p>
+              <p class="text-sm font-mono text-brand-gray">12M ∅ ${fmtNum(results.demandDestructionAvg, 1)} mb/d (${fmtNum(results.demandDestructionAvg / REFERENCE_DATA.globalConsumption * 100, 1)} %)</p>
             </div>
           </div>
 
