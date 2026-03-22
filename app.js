@@ -180,6 +180,7 @@ function computeSimulation(params) {
   const pctPeakPanic = pctPeakFund * activePanicMultiplier;
   const brentPeakFund = preCrisisBrent * (1 + pctPeakFund);
   const brentPeakPanic = preCrisisBrent * (1 + pctPeakPanic);
+  const ttfPeakFund = preCrisisTTF * (1 + pctPeakFund * ttfMult);
   const ttfPeakPanic = preCrisisTTF * (1 + pctPeakPanic * ttfMult);
 
   // 12-month average from trajectory
@@ -210,7 +211,7 @@ function computeSimulation(params) {
     brentFundamental: avgBrentFund, brentWithPanic: avgBrentPanic,
     brentPeakFund, brentPeakPanic,
     ttfFundamental: preCrisisTTF * (1 + ((avgBrentFund / preCrisisBrent - 1)) * ttfMult),
-    ttfWithPanic: avgTtfPanic, ttfPeakPanic,
+    ttfWithPanic: avgTtfPanic, ttfPeakFund, ttfPeakPanic,
     pctChangeFundamental: pctPeakFund, pctChangeWithPanic: pctPeakPanic,
     totalStockpileNeed, stockpileSufficiency,
     cpiImpactCZ: cpiImpactCZAvg, cpiImpactCZPeak,
@@ -766,7 +767,7 @@ function Simulator() {
             <span class="text-sm font-semibold" style=${{ color: sev.color }}>Závažnost scénáře: ${sev.label}</span>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
             <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
               <p class="text-xs text-brand-gray">Brent — fundamentální</p>
               <p class="text-lg font-bold font-mono text-brand-dark stat-value">Peak ${fmtNum(results.brentPeakFund, 0)} $</p>
@@ -778,7 +779,12 @@ function Simulator() {
               <p class="text-sm font-mono text-brand-gray">12M ∅ ${fmtNum(results.brentWithPanic, 0)} $</p>
             </div>
             <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
-              <p class="text-xs text-brand-gray">TTF — s panikou</p>
+              <p class="text-xs text-brand-gray">TTF (plyn) — fundamentální</p>
+              <p class="text-lg font-bold font-mono text-brand-dark stat-value">Peak ${fmtNum(results.ttfPeakFund, 0)} €</p>
+              <p class="text-sm font-mono text-brand-gray">12M ∅ ${fmtNum(results.ttfFundamental, 0)} €</p>
+            </div>
+            <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
+              <p class="text-xs text-brand-gray">TTF (plyn) — s panikou</p>
               <p class="text-lg font-bold font-mono stat-value" style=${{ color: valColor(results.ttfPeakPanic, 100, 150) }}>Peak ${fmtNum(results.ttfPeakPanic, 0)} €</p>
               <p class="text-sm font-mono text-brand-gray">12M ∅ ${fmtNum(results.ttfWithPanic, 0)} €</p>
             </div>
@@ -793,9 +799,9 @@ function Simulator() {
               <p class="text-sm font-mono text-brand-gray">12M ∅ +${fmtNum(results.cpiImpactCZ, 1)} p.b.</p>
             </div>
             <div class="bg-brand-card rounded-lg p-4 border border-brand-line">
-              <p class="text-xs text-brand-gray">HDP dopad ČR</p>
-              <p class="text-lg font-bold font-mono stat-value" style=${{ color: valColor(results.gdpImpactCZPeak, -1.5, -3) }}>Peak ${fmtNum(results.gdpImpactCZPeak, 1)} p.b.</p>
-              <p class="text-sm font-mono text-brand-gray">12M ∅ ${fmtNum(results.gdpImpactCZ, 1)} p.b.</p>
+              <p class="text-xs text-brand-gray">HDP dopad ČR (roční)</p>
+              <p class="text-lg font-bold font-mono stat-value" style=${{ color: valColor(results.gdpImpactCZ, -1.5, -3) }}>${fmtNum(results.gdpImpactCZ, 1)} p.b.</p>
+              <p class="text-xs text-brand-gray">při 12M ∅ Brent ${fmtNum(results.brentWithPanic, 0)} $</p>
             </div>
           </div>
 
