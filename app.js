@@ -851,6 +851,308 @@ function Simulator() {
 }
 
 // ============================================================
+// CASCADE DATA
+// ============================================================
+
+const CASCADE_COMMODITIES = [
+  { name: "Síra", category: 1, hormuzPct: 47.5, priceChange: 12, substitution: 0, czChannel: "Zemědělství → potraviny", keyFact: "Žádná strategická rezerva nikde na světě. Ceny rostly 440 % už před krizí.", color: "#DC2626" },
+  { name: "Methanol", category: 1, hormuzPct: 40, priceChange: 15, substitution: 0.2, czChannel: "Dřevozpracující průmysl, benzín", keyFact: "Írán = světová jednička. 55 % čínského dovozu. Přes Nizozemsko do ČR.", color: "#B45309" },
+  { name: "Propan a butan", category: 1, hormuzPct: 37.5, priceChange: 25, substitution: 0.3, czChannel: "Petrochemie, 50–60 tis. domácností", keyFact: "18 mil. tun čínských závodů závisí výhradně na zálivovém propanu.", color: "#B45309" },
+  { name: "Helium", category: 1, hormuzPct: 33, priceChange: 85, substitution: 0, czChannel: "Čipy, magnetická rezonance, věda", keyFact: "Odpaří se z kontejneru za 35–48 dní. Nevratná ztráta. Katar vyhlásil vyšší moc.", color: "#DC2626" },
+  { name: "Močovina", category: 1, hormuzPct: 30, priceChange: 35, substitution: 0, czChannel: "Zemědělství → potraviny", keyFact: "QAFCO (Katar): 5,6 mil. tun/rok — největší exportér. Čína zakázala vývoz do 8/2026.", color: "#B45309" },
+  { name: "Amoniak", category: 2, hormuzPct: 30, priceChange: 15, substitution: 0.5, czChannel: "Hnojiva", keyFact: "Nové americké kapacity 2,3 mil. tun pomáhají. Evropa ale trvale ztratila vlastní výrobu.", color: "#475569" },
+  { name: "Nafta (petrochemická)", category: 2, hormuzPct: 24, priceChange: 25, substitution: 0.6, czChannel: "Krakovací surovina", keyFact: "Ruská nafta se slevou, přechod na propan. Unipetrol se přizpůsobí za 2–4 týdny.", color: "#475569" },
+  { name: "Polyetylen a polypropylen", category: 2, hormuzPct: 17.5, priceChange: 52.5, substitution: 0.6, czChannel: "Plasty, automobilový průmysl", keyFact: "USA a Yanbu nabízejí alternativu. Cenový šok, ne fyzický nedostatek.", color: "#475569" },
+];
+
+const SULFUR_CHAIN = [
+  { title: "Uzavření Hormuzu", detail: "Íránské revoluční gardy zahajují blokádu. Lodní provoz se zastavuje." },
+  { title: "45–50 % globálních exportů síry blokováno", detail: "Katar, SAE, Saúdská Arábie a Írán — hlavní exportéři síry z rafinérií a plynáren. Žádná strategická rezerva neexistuje." },
+  { title: "Nedostatek kyseliny sírové", detail: "60–70 % světové síry se přeměňuje na kyselinu sírovou — klíčovou průmyslovou chemikálii." },
+  { title: "Výpadek fosfátových hnojiv", detail: "Maroko (OCP), největší výrobce fosfátů, přichází o 3,7 mil. tun zálivové síry ročně. Výroba se zastavuje." },
+  { title: "Vyšší ceny potravin", detail: "Prodleva 3–6 měsíců. Jarní setba 2026 zasažena. Dopad na ceny obilovin, ovoce, zeleniny." },
+];
+
+const SULFUR_STATS = [
+  { label: "Globální produkce/rok", value: "85 mil. tun" },
+  { label: "Zálivový podíl na exportech", value: "45–50 %" },
+  { label: "Dovozní cena Čína", value: "~577 $/t" },
+  { label: "Strategická rezerva", value: "0 tun" },
+];
+
+const STRANDED = [
+  { country: "Katar", capacity: "~17,7 mil. t", bypass: "0 %", note: "Hnojiva, plasty, helium — vše za Hormuzem" },
+  { country: "Spojené arabské emiráty", capacity: "~10 mil. t", bypass: "0 %", note: "Borouge (6,4 mil. t plastů) — žádná alternativní trasa" },
+  { country: "Kuvajt", capacity: "6+ mil. t", bypass: "0 %", note: "Kuvajtská petrochemie — žádná infrastruktura" },
+  { country: "Saúdská Arábie (Jubail)", capacity: "~55 mil. t", bypass: "~8 %", note: "Hnojiva i fosfáty za Hormuzem" },
+];
+
+const HELIUM_SECTORS = [
+  { title: "Polovodiče", detail: "Litografie pro čipy. Jižní Korea: 64,7 % helia z Kataru.", color: "#11457E" },
+  { title: "Zdravotnictví", detail: "~140–150 přístrojů magnetické rezonance v Česku. Méně než 5 % funguje bez helia.", color: "#11457E" },
+  { title: "Věda", detail: "ELI Beamlines (Dolní Břežany). Žádná alternativa k tekutému heliu.", color: "#11457E" },
+];
+
+// ============================================================
+// CASCADE SECTION COMPONENTS
+// ============================================================
+
+function CascadeIntro() {
+  return html`
+    <div class="mb-12">
+      <p class="uppercase tracking-widest text-xs font-bold text-brand-orange mb-3">Kaskádové dopady</p>
+      <h2 class="font-serif text-3xl sm:text-4xl font-black text-brand-dark mb-2">Za ropou je ještě něco horšího</h2>
+      <p class="font-serif text-lg text-brand-gray italic mb-6">Síra, helium, močovina a další komodity, které rozhodnou o cenách potravin a budoucnosti průmyslu</p>
+      <p class="text-base text-brand-mid leading-relaxed mb-8 max-w-3xl">
+        Hormuz není jen ropná brána. Přes průliv prochází 45–50 % globálně obchodované síry, třetina světového helia, 30 % exportované močoviny a 35–40 % zkapalněných ropných plynů. Na rozdíl od ropy, která má alternativní trasy pro 22–30 % zálivové produkce, chemikálie a hnojiva mají obchvat jen pro 7–10 %.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <${StatCard} label="Chemický obchvat" value="7–10 %" sub="vs. 22–30 % u ropy" accent="red" />
+        <${StatCard} label="Komodit bez substitutu" value="2" sub="Síra a helium — fyzikálně nenahraditelné" accent="red" />
+        <${StatCard} label="Uvězněné exporty" value=">80 mld. $" sub="Petrochemie a hnojiva ročně" accent="orange" />
+      </div>
+    </div>
+  `;
+}
+
+function CommodityChart() {
+  const [metric, setMetric] = useState('hormuzPct');
+  const [expanded, setExpanded] = useState(null);
+  const metricLabels = { hormuzPct: 'Hormuzská expozice (%)', priceChange: 'Cenový nárůst (%)', substitution: 'Nahraditelnost (0–1)' };
+  const metricBtns = [
+    { key: 'hormuzPct', label: 'Expozice' },
+    { key: 'priceChange', label: 'Cena' },
+    { key: 'substitution', label: 'Nahraditelnost' },
+  ];
+  const sorted = [...CASCADE_COMMODITIES].sort((a, b) => b[metric] - a[metric]);
+  const maxVal = metric === 'substitution' ? 1 : Math.max(...sorted.map(d => d[metric])) * 1.15;
+
+  return html`
+    <div class="mb-12">
+      <h3 class="font-serif text-lg font-bold text-brand-dark mb-1">Přehled komodit za Hormuzem</h3>
+      <p class="text-sm text-brand-gray mb-4">${metricLabels[metric]}. Klikněte na komoditu pro detail.</p>
+      <div class="flex gap-2 mb-4">
+        ${metricBtns.map(b => html`
+          <button key=${b.key} onClick=${() => setMetric(b.key)}
+            class="px-3 py-1.5 text-sm rounded-md border transition-colors ${metric === b.key ? 'bg-brand-dark text-white border-brand-dark' : 'bg-white text-brand-mid border-brand-line hover:border-brand-gray'}">${b.label}</button>
+        `)}
+      </div>
+      <div class="space-y-2">
+        ${sorted.map((d, i) => {
+          const pct = maxVal > 0 ? (d[metric] / maxVal * 100) : 0;
+          const valLabel = metric === 'substitution'
+            ? (d.substitution === 0 ? 'Žádná' : d.substitution <= 0.3 ? 'Nízká' : d.substitution <= 0.6 ? 'Částečná' : 'Vysoká')
+            : (metric === 'priceChange' ? '+' + d[metric] + ' %' : d[metric] + ' %');
+          const isOpen = expanded === i;
+          return html`
+            <div key=${i} class="cursor-pointer" onClick=${() => setExpanded(isOpen ? null : i)}>
+              <div class="flex items-center gap-3">
+                <div class="w-40 sm:w-48 text-sm font-medium text-brand-dark truncate">${d.name}</div>
+                <div class="flex-1 bg-gray-100 rounded-full h-6 relative overflow-hidden">
+                  <div class="h-full rounded-full transition-all duration-500" style=${{ width: pct + '%', backgroundColor: d.color, opacity: 0.85 }} />
+                </div>
+                <div class="w-16 text-right text-sm font-mono font-semibold" style=${{ color: d.color }}>${valLabel}</div>
+              </div>
+              ${isOpen && html`
+                <div class="mt-2 ml-0 sm:ml-48 p-3 bg-brand-card rounded border-l-4 text-sm" style=${{ borderColor: d.color }}>
+                  <p class="text-brand-dark font-medium mb-1">${d.keyFact}</p>
+                  <p class="text-brand-gray">Transmise do ČR: ${d.czChannel}</p>
+                </div>
+              `}
+            </div>
+          `;
+        })}
+      </div>
+    </div>
+  `;
+}
+
+function SulfurCascade() {
+  const [activeStep, setActiveStep] = useState(null);
+  return html`
+    <div class="mb-12">
+      <h3 class="font-serif text-lg font-bold text-brand-dark mb-1">Kaskádový řetězec: síra → potraviny</h3>
+      <p class="text-sm text-brand-gray mb-6">Jak se blokáda promítá do cen potravin přes pět kroků. Klikněte na krok pro detail.</p>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-0">
+          ${SULFUR_CHAIN.map((step, i) => html`
+            <div key=${i}>
+              <div class="flex items-start gap-3 cursor-pointer group" onClick=${() => setActiveStep(activeStep === i ? null : i)}>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0" style=${{ backgroundColor: i === 0 ? '#1A1D23' : i === SULFUR_CHAIN.length - 1 ? '#DC2626' : '#B45309' }}>${i + 1}</div>
+                  ${i < SULFUR_CHAIN.length - 1 && html`<div class="w-0.5 h-8 bg-gray-200" />`}
+                </div>
+                <div class="pt-1">
+                  <p class="font-semibold text-brand-dark group-hover:text-brand-orange transition-colors text-sm">${step.title}</p>
+                  ${activeStep === i && html`<p class="text-sm text-brand-gray mt-1">${step.detail}</p>`}
+                </div>
+              </div>
+            </div>
+          `)}
+        </div>
+        <div class="space-y-3">
+          <p class="text-xs uppercase tracking-wider text-brand-gray font-bold mb-2">Klíčová čísla — síra</p>
+          ${SULFUR_STATS.map((s, i) => html`
+            <div key=${i} class="bg-brand-card rounded-lg p-3 border-l-4 border-red-500">
+              <p class="text-xs text-brand-gray">${s.label}</p>
+              <p class="font-serif text-lg font-bold text-brand-dark">${s.value}</p>
+            </div>
+          `)}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function HeliumCountdown() {
+  const [days, setDays] = useState(0);
+  const totalContainers = 200;
+  const evapStart = 35;
+  const evapEnd = 90;
+  const surviving = days <= evapStart ? totalContainers
+    : days >= evapEnd ? 0
+    : Math.round(totalContainers * (1 - (days - evapStart) / (evapEnd - evapStart)));
+  const lostPct = Math.round((1 - surviving / totalContainers) * 100);
+
+  return html`
+    <div class="mb-12">
+      <h3 class="font-serif text-lg font-bold text-brand-dark mb-1">Helium — nevratná ztráta</h3>
+      <p class="text-sm text-brand-gray mb-4">Kryogenní kontejnery se odpařují za 35–48 dní. Posuňte slider a sledujte, kolik helia zbývá.</p>
+
+      <div class="flex items-center gap-4 mb-4">
+        <span class="text-sm font-mono w-20">Den ${days}</span>
+        <input type="range" min="0" max="90" value=${days} onInput=${e => setDays(+e.target.value)}
+          class="flex-1 accent-blue-700" />
+        <span class="text-sm font-mono w-28 text-right" style=${{ color: lostPct > 50 ? '#DC2626' : '#475569' }}>Ztráta: ${lostPct} %</span>
+      </div>
+
+      <div class="grid grid-cols-20 gap-px mb-6 p-3 bg-brand-card rounded-lg border border-brand-line">
+        ${Array.from({ length: totalContainers }, (_, i) => {
+          const alive = i < surviving;
+          return html`<div key=${i} class="aspect-square rounded-sm transition-all duration-300" style=${{
+            backgroundColor: alive ? '#11457E' : '#E2E8F0',
+            opacity: alive ? 1 : 0.4,
+          }} />`;
+        })}
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        ${HELIUM_SECTORS.map((s, i) => html`
+          <div key=${i} class="bg-brand-card rounded-lg p-4 border-l-4" style=${{ borderColor: s.color }}>
+            <p class="font-semibold text-brand-dark text-sm mb-1">${s.title}</p>
+            <p class="text-sm text-brand-gray">${s.detail}</p>
+          </div>
+        `)}
+      </div>
+    </div>
+  `;
+}
+
+function BypassGauges() {
+  const gauges = [
+    { label: "Ropa", value: "22–30 %", pct: 26, color: "#0D9488", detail: "Ropovody East-West (Yanbu) a ADCOP (Fudžajra)" },
+    { label: "Petrochemie a hnojiva", value: "7–10 %", pct: 8.5, color: "#DC2626", detail: "Yanbu 4–5 mil. tun + Omán 3–4 mil. tun" },
+  ];
+
+  return html`
+    <div class="mb-12">
+      <h3 class="font-serif text-lg font-bold text-brand-dark mb-1">Alternativní trasy: ropa vs. chemie</h3>
+      <p class="text-sm text-brand-gray mb-6">Ropa má obchvat pro čtvrtinu produkce. Chemikálie a hnojiva téměř žádný.</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+        ${gauges.map((g, i) => {
+          const angle = (g.pct / 100) * 180;
+          return html`
+            <div key=${i} class="bg-brand-card rounded-lg p-6 border border-brand-line text-center">
+              <svg viewBox="0 0 200 110" class="w-48 mx-auto mb-3">
+                <path d="M 10 100 A 90 90 0 0 1 190 100" fill="none" stroke="#E2E8F0" stroke-width="14" stroke-linecap="round" />
+                <path d="M 10 100 A 90 90 0 0 1 190 100" fill="none" stroke=${g.color} stroke-width="14" stroke-linecap="round"
+                  stroke-dasharray=${Math.PI * 90}
+                  stroke-dashoffset=${Math.PI * 90 * (1 - g.pct / 100)} />
+                <text x="100" y="90" text-anchor="middle" font-family="Georgia" font-size="28" font-weight="bold" fill=${g.color}>${g.value}</text>
+              </svg>
+              <p class="font-serif text-lg font-bold text-brand-dark">${g.label}</p>
+              <p class="text-sm text-brand-gray mt-1">${g.detail}</p>
+            </div>
+          `;
+        })}
+      </div>
+
+      <h4 class="font-serif text-base font-bold text-brand-dark mb-3">Uvězněné kapacity</h4>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        ${STRANDED.map((s, i) => html`
+          <div key=${i} class="bg-brand-card rounded-lg p-4 border-l-4 border-red-500">
+            <p class="font-semibold text-brand-dark text-sm">${s.country}</p>
+            <p class="font-serif text-xl font-bold text-brand-dark">${s.capacity}</p>
+            <p class="text-xs font-mono text-red-600 mb-1">Obchvat: ${s.bypass}</p>
+            <p class="text-xs text-brand-gray">${s.note}</p>
+          </div>
+        `)}
+      </div>
+    </div>
+  `;
+}
+
+function FertilizerShock() {
+  return html`
+    <div class="mb-12">
+      <h3 class="font-serif text-lg font-bold text-brand-dark mb-1">Hnojivový dvojitý šok</h3>
+      <p class="text-sm text-brand-gray mb-6">Poprvé simultánní výpadek obou hlavních makro-živin. V roce 2022 šlo jen o dusík (přes cenu plynu).</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+        <div class="bg-brand-card rounded-lg p-5 border-l-4 border-amber-600">
+          <p class="font-serif text-xl font-bold text-brand-dark mb-3">Dusík (N)</p>
+          <ul class="space-y-2 text-sm text-brand-mid">
+            <li class="flex gap-2"><span class="text-amber-600 font-bold">→</span> Močovina: 30 % exportů za Hormuzem</li>
+            <li class="flex gap-2"><span class="text-amber-600 font-bold">→</span> Katarský QAFCO: 5,6 mil. tun/rok</li>
+            <li class="flex gap-2"><span class="text-amber-600 font-bold">→</span> Čína: zakázala vývoz do 8/2026</li>
+            <li class="flex gap-2"><span class="text-amber-600 font-bold">→</span> Kapacita v EU: trvale snížena (Yara, BASF)</li>
+            <li class="flex gap-2"><span class="text-amber-600 font-bold">→</span> Cena: +35 % na tříleté maximum</li>
+          </ul>
+        </div>
+        <div class="bg-brand-card rounded-lg p-5 border-l-4 border-red-600">
+          <p class="font-serif text-xl font-bold text-brand-dark mb-3">Fosfor (P)</p>
+          <ul class="space-y-2 text-sm text-brand-mid">
+            <li class="flex gap-2"><span class="text-red-600 font-bold">→</span> Síra → fosfáty: 45–50 % exportů za Hormuzem</li>
+            <li class="flex gap-2"><span class="text-red-600 font-bold">→</span> Maroko (OCP): 3,7 mil. tun zálivové síry chybí</li>
+            <li class="flex gap-2"><span class="text-red-600 font-bold">→</span> Čína: export fosfátů zakázán do 8/2026</li>
+            <li class="flex gap-2"><span class="text-red-600 font-bold">→</span> Ma'aden (Saúdská Arábie): za Hormuzem</li>
+            <li class="flex gap-2"><span class="text-red-600 font-bold">→</span> Cena síry: +12 % (rally předběhla krizi)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4">
+        <p class="text-sm text-brand-dark"><strong>Dvojitý šok:</strong> Poprvé simultánní výpadek obou hlavních makro-živin. V roce 2022 šlo jen o dusík (přes cenu plynu). Načasování zasahuje jarní setbu 2026.</p>
+      </div>
+    </div>
+  `;
+}
+
+function CascadeSources() {
+  return html`
+    <div class="text-xs text-brand-gray leading-relaxed mt-8 pt-6 border-t border-brand-line">
+      <p>Zdroje: USGS (síra, helium), NDSU Agricultural Trade Monitor březen 2026 (hnojiva), Argus Media (ceny síry), Kornbluth Helium Consulting (helium), StoneX (močovina), IEA/EIA (alternativní trasy, toky přes Hormuz), OECD/ÚZIS (magnetická rezonance), Cooperative Logistics Network (přístavy).</p>
+      <p class="mt-1">Analýza: David Navrátil · <a href="https://davidnavratil.substack.com" target="_blank" rel="noopener" class="text-brand-orange hover:underline">Peníze, procenta a prosperita</a> · Březen 2026</p>
+    </div>
+  `;
+}
+
+function CascadeSection() {
+  return html`
+    <section id="kaskady" class="py-8">
+      <${CascadeIntro} />
+      <${CommodityChart} />
+      <${SulfurCascade} />
+      <${HeliumCountdown} />
+      <${BypassGauges} />
+      <${FertilizerShock} />
+      <${CascadeSources} />
+    </section>
+  `;
+}
+
+// ============================================================
 // FOOTER
 // ============================================================
 
@@ -879,14 +1181,31 @@ function Footer() {
 // APP
 // ============================================================
 
+function StickyNav() {
+  return html`
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-brand-line py-2">
+      <div class="max-w-content mx-auto px-4 sm:px-6 lg:px-8 flex gap-4 text-sm">
+        <a href="#top" class="text-brand-mid hover:text-brand-dark transition-colors">Ropný šok</a>
+        <span class="text-brand-line">|</span>
+        <a href="#kaskady" class="text-brand-mid hover:text-brand-dark transition-colors">Kaskádové dopady</a>
+        <span class="text-brand-line">|</span>
+        <a href="#simulator" class="text-brand-mid hover:text-brand-dark transition-colors">Simulátor</a>
+      </div>
+    </nav>
+  `;
+}
+
 function App() {
   return html`
-    <div class="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
+    <${StickyNav} />
+    <div id="top" class="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
       <${HeroSection} />
       <div class="section-divider" />
       <${KeyFindings} />
       <div class="section-divider" />
       <${Visualizations} />
+      <div class="section-divider" />
+      <${CascadeSection} />
       <div class="section-divider" />
       <${Simulator} />
       <${Footer} />
