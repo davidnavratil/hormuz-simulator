@@ -334,6 +334,20 @@ function HeroSection() {
           </div>
         </div>
       </a>
+      <a href="https://davidnavratil.substack.com/p/za-ropou-je-jeste-neco-horsiho-kaskadove" target="_blank" rel="noopener"
+        class="block mt-3 rounded-lg overflow-hidden bg-brand-card border border-brand-line hover:shadow-md transition-shadow group">
+        <div class="flex">
+          <div class="flex-shrink-0 w-28 sm:w-36">
+            <img src="https://substackcdn.com/image/fetch/w_300,h_300,c_fill,f_auto,q_auto:good/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F651aea6b-c813-4b75-a6f6-2db5bc5a8de6_1024x1024.png"
+              alt="" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="p-3 sm:p-4 flex flex-col justify-center min-w-0">
+            <p class="text-xs text-brand-gray mb-1">Kaskádové dopady na Substacku</p>
+            <p class="text-sm font-serif font-bold text-brand-dark leading-snug group-hover:text-brand-orange transition-colors line-clamp-2">Za ropou je ještě něco horšího</p>
+            <p class="text-xs text-brand-gray mt-1.5 leading-relaxed line-clamp-2 hidden sm:block">Síra, helium, močovina a další komodity, které rozhodnou o cenách potravin a budoucnosti průmyslu.</p>
+          </div>
+        </div>
+      </a>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
         <${StatCard} label="Ropa přes Hormuz" value="20 mb/d" description="~20 % světové spotřeby ropy" accent="orange" />
         <${StatCard} label="Katarský LNG" value="82 MT" description="19 % globálního obchodu se zkapalněným plynem" accent="orange" />
