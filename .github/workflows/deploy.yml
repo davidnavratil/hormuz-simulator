@@ -1,0 +1,57 @@
+name: Deploy to Mozek
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SLUG: hormuz
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H 77.42.84.152 >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy via rsync (vanilla JS — no build)
+        run: |
+          ssh root@77.42.84.152 "mkdir -p /var/www/davidnavratil.com/analyses/${SLUG}"
+          rsync -avz --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='scripts/' \
+            --exclude='*.md' \
+            --exclude='.gitignore' \
+            ./ root@77.42.84.152:/var/www/davidnavratil.com/analyses/${SLUG}/
+
+      - name: Verify deployment
+        run: |
+          URL="https://davidnavratil.com/analyses/${SLUG}/"
+          for i in 1 2 3; do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+            if [ "$CODE" = "200" ]; then
+              echo "✓ $URL returns 200"
+              exit 0
+            fi
+            echo "Attempt $i: $URL returned $CODE, retrying in 3s..."
+            sleep 3
+          done
+          echo "✗ $URL did not return 200 after 3 attempts"
+          exit 1
