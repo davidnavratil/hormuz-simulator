@@ -3,13 +3,17 @@ html {
   scroll-behavior: smooth;
 }
 
+body {
+  background: #F5F1E8;
+}
+
 /* ===== Slider Styling ===== */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
   height: 6px;
-  background: #E2E8F0;
+  background: #E0DCD4;
   border-radius: 3px;
   outline: none;
   cursor: pointer;
@@ -107,20 +111,20 @@ input[type="range"]::-moz-range-thumb {
 
 /* ===== Scenario Table ===== */
 .scenario-table th {
-  font-family: Georgia, Cambria, serif;
+  font-family: Fraunces, Georgia, Cambria, serif;
   font-weight: 600;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #94A3B8;
   padding: 8px 12px;
-  border-bottom: 2px solid #E2E8F0;
+  border-bottom: 2px solid #E0DCD4;
   text-align: left;
 }
 
 .scenario-table td {
   padding: 10px 12px;
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid #FAF8F3;
   font-variant-numeric: tabular-nums;
 }
 
@@ -136,7 +140,7 @@ input[type="range"]::-moz-range-thumb {
 /* ===== Preset Buttons ===== */
 .preset-btn {
   padding: 6px 14px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #E0DCD4;
   border-radius: 6px;
   font-size: 0.8rem;
   color: #64748B;
@@ -169,22 +173,22 @@ input[type="range"]::-moz-range-thumb {
 
 .warning-box.danger { border-left-color: #DC2626; background: #FEF2F2; color: #991B1B; }
 .warning-box.caution { border-left-color: #EAB308; background: #FEFCE8; color: #854D0E; }
-.warning-box.info { border-left-color: #94A3B8; background: #F8FAFC; color: #475569; }
+.warning-box.info { border-left-color: #94A3B8; background: #FFFFFF; color: #475569; }
 
 /* ===== Section Divider ===== */
 .section-divider {
   height: 1px;
-  background: linear-gradient(to right, transparent, #E2E8F0, transparent);
+  background: linear-gradient(to right, transparent, #E0DCD4, transparent);
 }
 
 /* ===== Recharts Overrides ===== */
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: #F1F5F9;
+  stroke: #FAF8F3;
 }
 
 .recharts-text {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
   font-size: 12px;
   fill: #64748B;
 }
@@ -199,7 +203,7 @@ input[type="range"]::-moz-range-thumb {
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #E0DCD4;
   border-radius: 6px;
   font-size: 0.85rem;
   color: #64748B;
