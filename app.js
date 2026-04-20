@@ -1203,7 +1203,7 @@ function StickyNav() {
   const langLabel = t('langSwitchLabel');
   return html`
     <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-brand-line py-2">
-      <div class="max-w-content mx-auto px-4 sm:px-6 lg:px-8 flex gap-4 text-sm">
+      <div class="max-w-content mx-auto px-4 sm:px-6 lg:px-8 flex gap-4 text-sm overflow-x-auto whitespace-nowrap">
         <a href="https://davidnavratil.com/${getLang() === 'en' ? 'en/' : ''}" class="text-brand-orange hover:text-brand-dark transition-colors font-semibold">${t('navBack')}</a>
         <span class="text-brand-line">|</span>
         <a href="#top" class="text-brand-mid hover:text-brand-dark transition-colors">${t('navOilShock')}</a>
