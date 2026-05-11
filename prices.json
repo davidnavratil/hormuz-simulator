@@ -1,9 +1,9 @@
 {
-  "brent": 100.1,
-  "ttf": 44.1,
+  "brent": 103.53,
+  "ttf": 44.52,
   "preCrisisBrent": 68,
   "preCrisisTTF": 36,
   "peakBrent": 126,
-  "updated": "2026-05-08T08:49:41Z",
+  "updated": "2026-05-11T10:44:23Z",
   "source": "yahoo_finance"
 }
