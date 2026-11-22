@@ -438,7 +438,7 @@ function StockpileTooltip({ active, payload }) {
   return html`
     <div class="bg-white border border-brand-line rounded-lg p-3 shadow-sm text-sm">
       <p class="font-semibold text-brand-dark">${d.label}</p>
-      <p class="font-mono">${fmtNum(d.need)} ${t('mil')}. bbl</p>
+      <p class="font-mono">${fmtNum(d.need)} ${t('mil')} bbl</p>
       <p class="text-xs mt-1 ${ok ? 'text-green-600' : 'text-red-600'}">
         ${ok ? t('stockpileReservesSuffice') : `${t('stockpileReservesCover')} ${fmtNum(400/d.need*100, 0)} %`}
       </p>
@@ -461,7 +461,7 @@ function StockpileBreakevenChart() {
           <${ReferenceLine} x=${400} stroke="#1A1D23" strokeDasharray="6 3" label=${{ value: t('stockpileIEALabel'), position: 'top', style: { fontSize: 11, fill: '#1A1D23' } }} />
           <${Bar} dataKey="need" radius=${[0, 3, 3, 0]}>
             ${data.map((d, i) => html`<${Cell} key=${i} fill=${d.color} />`)}
-            <${LabelList} dataKey="need" position="right" formatter=${v => `${fmtNum(v)} ${t('mil')}.`} style=${{ fontSize: 11, fill: '#64748B' }} />
+            <${LabelList} dataKey="need" position="right" formatter=${v => `${fmtNum(v)} ${t('mil')}`} style=${{ fontSize: 11, fill: '#64748B' }} />
           <//>
         <//>
       <//>
@@ -884,10 +884,10 @@ const SULFUR_STATS = () => [
 ];
 
 const STRANDED = () => [
-  { country: t('strandedQatar'), capacity: "~17,7 " + t('mil') + ". t", bypass: "0 %", note: t('strandedQatarNote') },
-  { country: t('strandedUAE'), capacity: "~10 " + t('mil') + ". t", bypass: "0 %", note: t('strandedUAENote') },
-  { country: t('strandedKuwait'), capacity: "6+ " + t('mil') + ". t", bypass: "0 %", note: t('strandedKuwaitNote') },
-  { country: t('strandedSaudi'), capacity: "~55 " + t('mil') + ". t", bypass: "~8 %", note: t('strandedSaudiNote') },
+  { country: t('strandedQatar'), capacity: "~17,7 " + t('mil') + " t", bypass: "0 %", note: t('strandedQatarNote') },
+  { country: t('strandedUAE'), capacity: "~10 " + t('mil') + " t", bypass: "0 %", note: t('strandedUAENote') },
+  { country: t('strandedKuwait'), capacity: "6+ " + t('mil') + " t", bypass: "0 %", note: t('strandedKuwaitNote') },
+  { country: t('strandedSaudi'), capacity: "~55 " + t('mil') + " t", bypass: "~8 %", note: t('strandedSaudiNote') },
 ];
 
 const HELIUM_SECTORS = () => [
